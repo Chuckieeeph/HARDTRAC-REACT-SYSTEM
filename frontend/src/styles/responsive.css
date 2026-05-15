@@ -1,0 +1,36 @@
+@media (max-width: 992px) {
+  .ht-sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 1040;
+    transform: translateX(-102%);
+  }
+
+  .ht-mobileOpen .ht-sidebar {
+    transform: translateX(0);
+  }
+
+  .ht-mobileOverlay {
+    display: none;
+  }
+  .ht-mobileOpen .ht-mobileOverlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(2, 6, 23, 0.5);
+    z-index: 1030;
+  }
+}
+
+@media (max-width: 576px) {
+  .ht-main {
+    padding: 0.75rem;
+  }
+  .ht-sidebar {
+    width: 86vw;
+    max-width: 320px;
+  }
+}
+

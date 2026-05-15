@@ -23,7 +23,7 @@ export default function CashierDashboard() {
   return (
     <div className="row g-3">
       <div className="col-md-4">
-        <div className="card shadow-sm">
+        <div className="card ht-cardHover ht-statCard">
           <div className="card-body">
             <div className="text-muted small">Today's Sales</div>
             <div className="fs-4 fw-bold">₱ {Number(summary.today_sales).toFixed(2)}</div>
@@ -31,7 +31,7 @@ export default function CashierDashboard() {
         </div>
       </div>
       <div className="col-md-4">
-        <div className="card shadow-sm">
+        <div className="card ht-cardHover ht-statCard">
           <div className="card-body">
             <div className="text-muted small">Today's Transactions</div>
             <div className="fs-4 fw-bold">{summary.today_transactions}</div>
@@ -39,10 +39,10 @@ export default function CashierDashboard() {
         </div>
       </div>
       <div className="col-md-4">
-        <div className="card shadow-sm">
+        <div className="card ht-cardHover">
           <div className="card-body">
             <div className="text-muted small">Quick Links</div>
-            <a className="btn btn-primary btn-sm mt-2" href="/pos">
+            <a className="btn btn-primary btn-sm mt-2 ht-btn ht-btnAccent" href="/pos">
               Go to POS
             </a>
           </div>
@@ -51,4 +51,3 @@ export default function CashierDashboard() {
     </div>
   );
 }
-

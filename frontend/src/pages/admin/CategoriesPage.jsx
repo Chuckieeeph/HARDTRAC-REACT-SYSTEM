@@ -51,18 +51,18 @@ export default function CategoriesPage() {
 
   return (
     <>
-      <h4 className="mb-3">Categories</h4>
+      <h4 className="mb-3 ht-title">Categories</h4>
 
-      <div className="card shadow-sm mb-3">
+      <div className="card ht-cardHover mb-3">
         <div className="card-body">
           <form className="d-flex gap-2" onSubmit={addCategory}>
             <input className="form-control" placeholder="New category name" value={name} onChange={(e) => setName(e.target.value)} />
-            <button className="btn btn-primary">Add</button>
+            <button className="btn btn-primary ht-btn ht-btnAccent">Add</button>
           </form>
         </div>
       </div>
 
-      <div className="card shadow-sm">
+      <div className="card ht-cardHover">
         <div className="table-responsive">
           <table className="table mb-0">
             <thead>
@@ -85,7 +85,7 @@ export default function CategoriesPage() {
                     />
                   </td>
                   <td className="text-end">
-                    <button className="btn btn-sm btn-outline-danger" onClick={() => deleteCategory(c.id)}>
+                    <button className="btn btn-sm btn-outline-danger ht-btn" onClick={() => deleteCategory(c.id)}>
                       Delete
                     </button>
                   </td>
@@ -107,4 +107,3 @@ export default function CategoriesPage() {
     </>
   );
 }
-

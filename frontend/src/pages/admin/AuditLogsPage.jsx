@@ -29,12 +29,12 @@ export default function AuditLogsPage() {
   return (
     <>
       <div className="d-flex align-items-center justify-content-between mb-3">
-        <h4 className="mb-0">Audit Logs</h4>
-        <button className="btn btn-outline-secondary" onClick={load}>
+        <h4 className="mb-0 ht-title">Audit Logs</h4>
+        <button className="btn btn-outline-secondary ht-btn ht-btnGhost" onClick={load}>
           Refresh
         </button>
       </div>
-      <div className="card shadow-sm">
+      <div className="card ht-cardHover">
         <div className="table-responsive">
           <table className="table table-sm mb-0">
             <thead>
@@ -70,4 +70,3 @@ export default function AuditLogsPage() {
     </>
   );
 }
-

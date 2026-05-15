@@ -32,17 +32,17 @@ export default function LowStockReportPage() {
     <>
       <div className="d-flex align-items-center justify-content-between mb-3">
         <div>
-          <h4 className="mb-0">Low Stock Report</h4>
-          <div className="text-muted small">Products that need reordering</div>
+          <h4 className="mb-0 ht-title">Low Stock Report</h4>
+          <div className="ht-muted small">Products that need reordering</div>
         </div>
-        <button className="btn btn-outline-secondary" onClick={() => window.print()}>
+        <button className="btn btn-outline-secondary ht-btn ht-btnGhost" onClick={() => window.print()}>
           Print
         </button>
       </div>
 
       <div className="row g-3">
         <div className="col-md-6">
-          <div className="card shadow-sm">
+          <div className="card ht-cardHover">
             <div className="card-body">
               <div className="fw-semibold mb-2">Low Stock</div>
               <ul className="mb-0">
@@ -57,7 +57,7 @@ export default function LowStockReportPage() {
           </div>
         </div>
         <div className="col-md-6">
-          <div className="card shadow-sm">
+          <div className="card ht-cardHover">
             <div className="card-body">
               <div className="fw-semibold mb-2">Out of Stock</div>
               <ul className="mb-0">
@@ -73,4 +73,3 @@ export default function LowStockReportPage() {
     </>
   );
 }
-

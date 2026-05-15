@@ -19,6 +19,7 @@ export default function POSPage() {
   const [submitting, setSubmitting] = useState(false);
   const [toast, setToast] = useState({ show: false, message: "", variant: "success" });
   const [receipt, setReceipt] = useState(null);
+  const [lastAddedId, setLastAddedId] = useState(null);
 
   useEffect(() => {
     scanRef.current?.focus();
@@ -34,6 +35,9 @@ export default function POSPage() {
     try {
       const { data } = await api.get("/products/search", { params: { code: value } });
       const p = data.product;
+
+      setLastAddedId(p.id);
+      setTimeout(() => setLastAddedId(null), 350);
 
       setCart((prev) => {
         const existing = prev.find((x) => x.productId === p.id);
@@ -104,22 +108,22 @@ export default function POSPage() {
     <>
       <div className="d-flex align-items-center justify-content-between mb-3">
         <div>
-          <h4 className="mb-0">POS</h4>
-          <div className="text-muted small">Scan barcode/RFID or type product code</div>
+          <h4 className="mb-0 ht-title">POS</h4>
+          <div className="ht-muted small">Scan barcode/RFID or type product code</div>
         </div>
-        <button className="btn btn-outline-secondary" onClick={() => scanRef.current?.focus()}>
+        <button className="btn btn-outline-secondary ht-btn ht-btnGhost" onClick={() => scanRef.current?.focus()}>
           Focus Scan
         </button>
       </div>
 
       <div className="row g-3">
         <div className="col-lg-7">
-          <div className="card shadow-sm mb-3">
+          <div className="card ht-cardHover mb-3">
             <div className="card-body">
               <label className="form-label fw-semibold">Scan / Search</label>
               <input
                 ref={scanRef}
-                className="form-control form-control-lg"
+                className="form-control form-control-lg ht-scanGlow"
                 placeholder="Scan barcode or RFID then press Enter..."
                 value={scanCode}
                 onChange={(e) => setScanCode(e.target.value)}
@@ -128,12 +132,12 @@ export default function POSPage() {
                 }}
               />
               <div className="text-muted small mt-2">
-                Tip: scanners usually act like keyboards; keep this field focused.
+                Tip: scanners usually act like keyboards; keep this field focused. Press <span className="ht-kbd">Enter</span> after typing.
               </div>
             </div>
           </div>
 
-          <div className="card shadow-sm">
+          <div className="card ht-cardHover">
             <div className="card-body">
               <div className="fw-semibold mb-2">Cart</div>
               <div className="table-responsive">
@@ -149,7 +153,7 @@ export default function POSPage() {
                   </thead>
                   <tbody>
                     {cart.map((it) => (
-                      <tr key={it.productId}>
+                      <tr key={it.productId} className={it.productId === lastAddedId ? "animate-slide-up" : ""}>
                         <td>
                           <div className="fw-semibold">{it.name}</div>
                           <div className="text-muted small">Stock: {it.stock}</div>
@@ -158,7 +162,7 @@ export default function POSPage() {
                         <td className="text-center" style={{ width: 160 }}>
                           <div className="btn-group" role="group">
                             <button
-                              className="btn btn-outline-secondary btn-sm"
+                              className="btn btn-outline-secondary btn-sm ht-btn ht-btnGhost"
                               onClick={() => setQty(it.productId, Math.max(1, it.qty - 1))}
                             >
                               -
@@ -174,7 +178,7 @@ export default function POSPage() {
                               }}
                             />
                             <button
-                              className="btn btn-outline-secondary btn-sm"
+                              className="btn btn-outline-secondary btn-sm ht-btn ht-btnGhost"
                               onClick={() => setQty(it.productId, Math.min(it.stock, it.qty + 1))}
                               disabled={it.qty >= it.stock}
                             >
@@ -184,7 +188,7 @@ export default function POSPage() {
                         </td>
                         <td className="text-end">{money(it.unitPrice * it.qty)}</td>
                         <td className="text-end">
-                          <button className="btn btn-sm btn-outline-danger" onClick={() => setQty(it.productId, 0)}>
+                          <button className="btn btn-sm btn-outline-danger ht-btn" onClick={() => setQty(it.productId, 0)}>
                             Remove
                           </button>
                         </td>
@@ -205,7 +209,7 @@ export default function POSPage() {
         </div>
 
         <div className="col-lg-5">
-          <div className="card shadow-sm">
+          <div className="card ht-cardHover">
             <div className="card-body">
               <div className="fw-semibold mb-2">Payment</div>
 
@@ -247,7 +251,11 @@ export default function POSPage() {
                 <span className="fw-semibold">{money(change)}</span>
               </div>
 
-              <button className="btn btn-primary w-100 mt-3" disabled={submitting} onClick={completeSale}>
+              <button
+                className="btn btn-primary w-100 mt-3 ht-btn ht-btnAccent"
+                disabled={submitting}
+                onClick={completeSale}
+              >
                 {submitting ? "Processing..." : "Complete Sale"}
               </button>
             </div>
@@ -261,4 +269,3 @@ export default function POSPage() {
     </>
   );
 }
-

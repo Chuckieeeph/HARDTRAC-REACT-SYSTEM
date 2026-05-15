@@ -114,10 +114,10 @@ export default function ProductFormPage({ mode }) {
     <>
       <div className="d-flex align-items-center justify-content-between mb-3">
         <div>
-          <h4 className="mb-0">{mode === "create" ? "Add Product" : "Edit Product"}</h4>
-          <div className="text-muted small">Barcode and RFID values must be unique</div>
+          <h4 className="mb-0 ht-title">{mode === "create" ? "Add Product" : "Edit Product"}</h4>
+          <div className="ht-muted small">Barcode and RFID values must be unique</div>
         </div>
-        <Link to="/admin/products" className="btn btn-outline-secondary">
+        <Link to="/admin/products" className="btn btn-outline-secondary ht-btn ht-btnGhost">
           Back
         </Link>
       </div>
@@ -125,7 +125,7 @@ export default function ProductFormPage({ mode }) {
       {loading ? (
         <div>Loading...</div>
       ) : (
-        <div className="card shadow-sm">
+        <div className="card ht-cardHover">
           <div className="card-body">
             <form onSubmit={save}>
               <div className="row g-3">
@@ -206,10 +206,10 @@ export default function ProductFormPage({ mode }) {
               </div>
 
               <div className="mt-4 d-flex gap-2">
-                <button className="btn btn-primary" disabled={saving}>
+                <button className="btn btn-primary ht-btn ht-btnPrimary" disabled={saving}>
                   {saving ? "Saving..." : "Save"}
                 </button>
-                <Link to="/admin/products" className="btn btn-outline-secondary">
+                <Link to="/admin/products" className="btn btn-outline-secondary ht-btn ht-btnGhost">
                   Cancel
                 </Link>
               </div>
@@ -222,4 +222,3 @@ export default function ProductFormPage({ mode }) {
     </>
   );
 }
-

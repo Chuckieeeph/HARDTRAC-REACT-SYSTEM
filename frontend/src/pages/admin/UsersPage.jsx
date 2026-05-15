@@ -60,9 +60,9 @@ export default function UsersPage() {
 
   return (
     <>
-      <h4 className="mb-3">Users / Cashiers</h4>
+      <h4 className="mb-3 ht-title">Users / Cashiers</h4>
 
-      <div className="card shadow-sm mb-3">
+      <div className="card ht-cardHover mb-3">
         <div className="card-body">
           <form className="row g-2" onSubmit={addUser}>
             <div className="col-md-3">
@@ -81,13 +81,13 @@ export default function UsersPage() {
               <input className="form-control" type="password" placeholder="Password" value={form.password} onChange={(e) => setField("password", e.target.value)} required />
             </div>
             <div className="col-md-2 d-grid">
-              <button className="btn btn-primary">Create</button>
+              <button className="btn btn-primary ht-btn ht-btnAccent">Create</button>
             </div>
           </form>
         </div>
       </div>
 
-      <div className="card shadow-sm">
+      <div className="card ht-cardHover">
         <div className="table-responsive">
           <table className="table mb-0">
             <thead>
@@ -117,7 +117,7 @@ export default function UsersPage() {
                     </select>
                   </td>
                   <td className="text-end">
-                    <button className="btn btn-sm btn-outline-secondary" onClick={() => resetPassword(u.id)}>
+                    <button className="btn btn-sm btn-outline-secondary ht-btn ht-btnGhost" onClick={() => resetPassword(u.id)}>
                       Reset Password
                     </button>
                   </td>
@@ -139,4 +139,3 @@ export default function UsersPage() {
     </>
   );
 }
-

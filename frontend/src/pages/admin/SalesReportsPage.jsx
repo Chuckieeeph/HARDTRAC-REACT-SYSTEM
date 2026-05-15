@@ -58,15 +58,15 @@ export default function SalesReportsPage() {
     <>
       <div className="d-flex align-items-center justify-content-between mb-3">
         <div>
-          <h4 className="mb-0">Sales Reports</h4>
-          <div className="text-muted small">Filter by date range</div>
+          <h4 className="mb-0 ht-title">Sales Reports</h4>
+          <div className="ht-muted small">Filter by date range</div>
         </div>
         <div className="d-flex gap-2">
-          <button className="btn btn-outline-secondary" onClick={() => window.print()}>
+          <button className="btn btn-outline-secondary ht-btn ht-btnGhost" onClick={() => window.print()}>
             Print
           </button>
           <button
-            className="btn btn-outline-primary"
+            className="btn btn-outline-primary ht-btn ht-btnGhost"
             onClick={() => {
               if (!best.length) return;
               downloadCsv("best_sellers.csv", best);
@@ -77,7 +77,7 @@ export default function SalesReportsPage() {
         </div>
       </div>
 
-      <div className="card shadow-sm mb-3">
+      <div className="card ht-cardHover mb-3">
         <div className="card-body d-flex flex-wrap gap-2 align-items-end">
           <div>
             <label className="form-label small mb-1">From</label>
@@ -87,7 +87,7 @@ export default function SalesReportsPage() {
             <label className="form-label small mb-1">To</label>
             <input className="form-control" type="date" value={to} onChange={(e) => setTo(e.target.value)} />
           </div>
-          <button className="btn btn-primary" onClick={load} disabled={loading}>
+          <button className="btn btn-primary ht-btn ht-btnPrimary" onClick={load} disabled={loading}>
             {loading ? "Loading..." : "Apply"}
           </button>
         </div>
@@ -99,7 +99,7 @@ export default function SalesReportsPage() {
       ) : (
         <div className="row g-3">
           <div className="col-md-4">
-            <div className="card shadow-sm">
+            <div className="card ht-cardHover ht-statCard">
               <div className="card-body">
                 <div className="text-muted small">Total Sales</div>
                 <div className="fs-4 fw-bold">{money(summary.total_sales)}</div>
@@ -107,7 +107,7 @@ export default function SalesReportsPage() {
             </div>
           </div>
           <div className="col-md-4">
-            <div className="card shadow-sm">
+            <div className="card ht-cardHover ht-statCard">
               <div className="card-body">
                 <div className="text-muted small">Total Transactions</div>
                 <div className="fs-4 fw-bold">{summary.total_transactions}</div>
@@ -119,7 +119,7 @@ export default function SalesReportsPage() {
 
       <div className="row g-3 mt-1">
         <div className="col-md-6">
-          <div className="card shadow-sm">
+          <div className="card ht-cardHover">
             <div className="card-body">
               <div className="fw-semibold mb-2">Best-Selling Products</div>
               <div className="table-responsive">
@@ -153,7 +153,7 @@ export default function SalesReportsPage() {
           </div>
         </div>
         <div className="col-md-6">
-          <div className="card shadow-sm">
+          <div className="card ht-cardHover">
             <div className="card-body">
               <div className="fw-semibold mb-2">Cashier Performance</div>
               <div className="table-responsive">
@@ -190,4 +190,3 @@ export default function SalesReportsPage() {
     </>
   );
 }
-

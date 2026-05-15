@@ -124,3 +124,20 @@ Matching fields used by the POS scan:
   - `products.rfid_value`
 - Inventory automatically decreases when a sale is completed.
 - The backend prevents selling more than available stock (transaction-level checks).
+
+## Theme & UI (MVS Light / HARDTRAC Dark)
+
+Theme files (frontend):
+
+- `frontend/src/styles/theme.css` (CSS variables + light/dark tokens)
+- `frontend/src/styles/global.css` (global resets, focus rings, base utilities)
+- `frontend/src/styles/layout.css` (sidebar/topbar/layout)
+- `frontend/src/styles/components.css` (cards/buttons/tables/modals)
+- `frontend/src/styles/animations.css` (subtle animations)
+- `frontend/src/styles/responsive.css` (mobile sidebar + breakpoints)
+
+Light/dark toggle:
+
+- Toggle is in the topbar.
+- Saved in `localStorage` key `hardtrac_theme`.
+- Applied globally via `data-theme="light|dark"` on `<html>` (see `frontend/src/context/ThemeContext.jsx`).

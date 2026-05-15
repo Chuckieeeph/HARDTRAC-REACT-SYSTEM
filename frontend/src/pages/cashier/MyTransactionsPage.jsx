@@ -40,13 +40,13 @@ export default function MyTransactionsPage() {
   return (
     <>
       <div className="d-flex align-items-center justify-content-between mb-3">
-        <h4 className="mb-0">My Transactions</h4>
-        <button className="btn btn-outline-secondary" onClick={load}>
+        <h4 className="mb-0 ht-title">My Transactions</h4>
+        <button className="btn btn-outline-secondary ht-btn ht-btnGhost" onClick={load}>
           Refresh
         </button>
       </div>
 
-      <div className="card shadow-sm">
+      <div className="card ht-cardHover">
         <div className="table-responsive">
           <table className="table mb-0">
             <thead>
@@ -64,7 +64,7 @@ export default function MyTransactionsPage() {
                   <td className="text-muted small">{new Date(s.created_at).toLocaleString()}</td>
                   <td className="text-end fw-semibold">{money(s.total_amount)}</td>
                   <td className="text-end">
-                    <button className="btn btn-sm btn-outline-primary" onClick={() => viewSale(s.id)}>
+                    <button className="btn btn-sm btn-outline-primary ht-btn ht-btnGhost" onClick={() => viewSale(s.id)}>
                       View
                     </button>
                   </td>
@@ -83,11 +83,11 @@ export default function MyTransactionsPage() {
       </div>
 
       {expanded && (
-        <div className="card shadow-sm mt-3">
+        <div className="card ht-cardHover mt-3 animate-scale-in">
           <div className="card-body">
             <div className="d-flex justify-content-between align-items-center">
               <div className="fw-semibold">Sale #{expanded.sale.id}</div>
-              <button className="btn btn-sm btn-outline-secondary" onClick={() => setExpanded(null)}>
+              <button className="btn btn-sm btn-outline-secondary ht-btn ht-btnGhost" onClick={() => setExpanded(null)}>
                 Close
               </button>
             </div>
@@ -121,4 +121,3 @@ export default function MyTransactionsPage() {
     </>
   );
 }
-

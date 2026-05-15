@@ -45,9 +45,9 @@ export default function SuppliersPage() {
 
   return (
     <>
-      <h4 className="mb-3">Suppliers</h4>
+      <h4 className="mb-3 ht-title">Suppliers</h4>
 
-      <div className="card shadow-sm mb-3">
+      <div className="card ht-cardHover mb-3">
         <div className="card-body">
           <form className="row g-2" onSubmit={addSupplier}>
             <div className="col-md-4">
@@ -66,13 +66,13 @@ export default function SuppliersPage() {
               <input className="form-control" placeholder="Address" value={form.address} onChange={(e) => setField("address", e.target.value)} />
             </div>
             <div className="col-md-3 d-grid">
-              <button className="btn btn-primary">Add Supplier</button>
+              <button className="btn btn-primary ht-btn ht-btnAccent">Add Supplier</button>
             </div>
           </form>
         </div>
       </div>
 
-      <div className="card shadow-sm">
+      <div className="card ht-cardHover">
         <div className="table-responsive">
           <table className="table mb-0">
             <thead>
@@ -94,7 +94,7 @@ export default function SuppliersPage() {
                   <td>{s.email || "-"}</td>
                   <td className="text-muted small">{s.address || "-"}</td>
                   <td className="text-end">
-                    <button className="btn btn-sm btn-outline-danger" onClick={() => deleteSupplier(s.id)}>
+                    <button className="btn btn-sm btn-outline-danger ht-btn" onClick={() => deleteSupplier(s.id)}>
                       Delete
                     </button>
                   </td>
@@ -116,4 +116,3 @@ export default function SuppliersPage() {
     </>
   );
 }
-

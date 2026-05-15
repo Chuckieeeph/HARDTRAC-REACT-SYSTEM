@@ -65,15 +65,15 @@ export default function ProductsPage() {
     <>
       <div className="d-flex align-items-center justify-content-between mb-3">
         <div>
-          <h4 className="mb-0">Products</h4>
-          <div className="text-muted small">Manage products, barcode, and RFID values</div>
+          <h4 className="mb-0 ht-title">Products</h4>
+          <div className="ht-muted small">Manage products, barcode, and RFID values</div>
         </div>
-        <Link className="btn btn-primary" to="/admin/products/new">
+        <Link className="btn btn-primary ht-btn ht-btnAccent" to="/admin/products/new">
           Add Product
         </Link>
       </div>
 
-      <div className="card shadow-sm mb-3">
+      <div className="card ht-cardHover mb-3">
         <div className="card-body d-flex gap-2">
           <input
             className="form-control"
@@ -84,7 +84,7 @@ export default function ProductsPage() {
               if (e.key === "Enter") load();
             }}
           />
-          <button className="btn btn-outline-primary" onClick={load}>
+          <button className="btn btn-outline-primary ht-btn ht-btnGhost" onClick={load}>
             Search
           </button>
         </div>
@@ -96,7 +96,7 @@ export default function ProductsPage() {
       ) : filtered.length === 0 ? (
         <div className="alert alert-info">No products found.</div>
       ) : (
-        <div className="card shadow-sm">
+        <div className="card ht-cardHover">
           <div className="table-responsive">
             <table className="table table-striped mb-0">
               <thead>
@@ -129,11 +129,11 @@ export default function ProductsPage() {
                       {p.status === "inactive" && <span className="badge text-bg-secondary ms-2">Inactive</span>}
                     </td>
                     <td className="text-end">
-                      <Link className="btn btn-sm btn-outline-secondary me-2" to={`/admin/products/${p.id}/edit`}>
+                      <Link className="btn btn-sm btn-outline-secondary me-2 ht-btn ht-btnGhost" to={`/admin/products/${p.id}/edit`}>
                         Edit
                       </Link>
                       <button
-                        className="btn btn-sm btn-outline-danger"
+                        className="btn btn-sm btn-outline-danger ht-btn"
                         onClick={() => setArchiveTarget({ id: p.id, name: p.name })}
                       >
                         Archive
@@ -160,4 +160,3 @@ export default function ProductsPage() {
     </>
   );
 }
-

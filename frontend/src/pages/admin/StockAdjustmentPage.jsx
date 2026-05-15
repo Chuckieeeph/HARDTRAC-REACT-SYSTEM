@@ -37,8 +37,8 @@ export default function StockAdjustmentPage() {
 
   return (
     <>
-      <h4 className="mb-3">Stock Adjustment</h4>
-      <div className="card shadow-sm">
+      <h4 className="mb-3 ht-title">Stock Adjustment</h4>
+      <div className="card ht-cardHover">
         <div className="card-body">
           <form className="row g-3" onSubmit={submit}>
             <div className="col-md-6">
@@ -68,7 +68,7 @@ export default function StockAdjustmentPage() {
               <input className="form-control" value={form.reason} onChange={(e) => setField("reason", e.target.value)} placeholder="e.g., New delivery, Damaged item, Stock count correction" required />
             </div>
             <div className="col-md-12">
-              <button className="btn btn-primary">Apply</button>
+              <button className="btn btn-primary ht-btn ht-btnAccent">Apply</button>
             </div>
           </form>
         </div>
@@ -78,4 +78,3 @@ export default function StockAdjustmentPage() {
     </>
   );
 }
-

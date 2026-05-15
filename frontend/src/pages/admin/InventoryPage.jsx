@@ -48,17 +48,17 @@ export default function InventoryPage() {
     <>
       <div className="d-flex align-items-center justify-content-between mb-3">
         <div>
-          <h4 className="mb-0">Inventory</h4>
-          <div className="text-muted small">Low-stock and out-of-stock are highlighted</div>
+          <h4 className="mb-0 ht-title">Inventory</h4>
+          <div className="ht-muted small">Low-stock and out-of-stock are highlighted</div>
         </div>
-        <button className="btn btn-outline-secondary" onClick={load}>
+        <button className="btn btn-outline-secondary ht-btn ht-btnGhost" onClick={load}>
           Refresh
         </button>
       </div>
 
       <div className="row g-3 mb-3">
         <div className="col-md-6">
-          <div className="card shadow-sm">
+          <div className="card ht-cardHover">
             <div className="card-body">
               <div className="fw-semibold mb-2">Low Stock</div>
               {low.length === 0 ? (
@@ -76,7 +76,7 @@ export default function InventoryPage() {
           </div>
         </div>
         <div className="col-md-6">
-          <div className="card shadow-sm">
+          <div className="card ht-cardHover">
             <div className="card-body">
               <div className="fw-semibold mb-2">Out of Stock</div>
               {out.length === 0 ? (
@@ -93,7 +93,7 @@ export default function InventoryPage() {
         </div>
       </div>
 
-      <div className="card shadow-sm mb-3">
+      <div className="card ht-cardHover mb-3">
         <div className="card-body">
           <div className="fw-semibold mb-2">Products Stock</div>
           <div className="table-responsive">
@@ -132,7 +132,7 @@ export default function InventoryPage() {
         </div>
       </div>
 
-      <div className="card shadow-sm">
+      <div className="card ht-cardHover">
         <div className="card-body">
           <div className="fw-semibold mb-2">Recent Stock Movements</div>
           <div className="table-responsive">
@@ -173,4 +173,3 @@ export default function InventoryPage() {
     </>
   );
 }
-
