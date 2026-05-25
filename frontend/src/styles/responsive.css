@@ -1,0 +1,86 @@
+/* Overlay is only used for the mobile sidebar; keep it disabled by default */
+.ht-mobileOverlay {
+  display: none !important;
+  pointer-events: none;
+}
+
+@media (max-width: 992px) {
+  .ht-sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 1040;
+    transform: translateX(-102%);
+    pointer-events: none;
+  }
+
+  .ht-mobileOpen .ht-sidebar {
+    transform: translateX(0);
+    pointer-events: auto;
+  }
+
+  .ht-mobileOverlay {
+    display: none !important;
+  }
+  .ht-mobileOpen .ht-mobileOverlay {
+    display: block !important;
+    position: fixed;
+    inset: 0;
+    background: rgba(2, 6, 23, 0.5);
+    z-index: 1030;
+    pointer-events: auto;
+    touch-action: manipulation;
+  }
+}
+
+@media (max-width: 768px) {
+  .ht-topbar .container-fluid {
+    flex-wrap: wrap;
+    gap: 0.75rem !important;
+  }
+
+  .ht-topbar .ht-userLabel {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 576px) {
+  .ht-main {
+    padding: 0.75rem;
+  }
+  .ht-sidebar {
+    width: 86vw;
+    max-width: 320px;
+  }
+
+  .ht-fieldNarrow,
+  .ht-fieldTiny,
+  .ht-cartQtyCell {
+    width: 100% !important;
+  }
+
+  .ht-cartQtyGroup {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+.ht-fieldNarrow {
+  width: 140px;
+}
+
+.ht-fieldTiny {
+  width: 60px;
+}
+
+.ht-cartQtyCell {
+  width: 160px;
+}
+
+.ht-userLabel {
+  max-width: 40vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

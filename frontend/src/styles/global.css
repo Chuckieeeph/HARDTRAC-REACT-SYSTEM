@@ -1,0 +1,94 @@
+html,
+body {
+  height: 100%;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji",
+    "Segoe UI Emoji";
+  background: var(--color-bg);
+  color: var(--color-text);
+  overflow-x: hidden;
+}
+
+::selection {
+  background: rgba(245, 158, 11, 0.35);
+}
+
+img,
+video,
+canvas,
+svg {
+  max-width: 100%;
+  height: auto;
+}
+
+.table-responsive {
+  -webkit-overflow-scrolling: touch;
+}
+
+.ht-surface {
+  background: var(--color-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.ht-muted {
+  color: var(--color-muted) !important;
+}
+
+.ht-title {
+  letter-spacing: 0.02em;
+}
+
+.ht-kbd {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  border: 1px solid var(--border-color);
+  background: var(--color-surface-2);
+  border-radius: 10px;
+  padding: 0.15rem 0.4rem;
+  font-size: 0.85em;
+  color: var(--color-text);
+}
+
+/* Better focus rings */
+.form-control:focus,
+.form-select:focus,
+.btn:focus {
+  box-shadow: 0 0 0 0.2rem rgba(245, 158, 11, 0.25) !important;
+  border-color: rgba(245, 158, 11, 0.65) !important;
+}
+
+/* Smooth transitions */
+* {
+  transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast),
+    box-shadow var(--transition-fast), transform var(--transition-fast);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Nice scrollbar (WebKit) */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.35);
+  border-radius: 999px;
+}
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.22);
+}

@@ -1,0 +1,195 @@
+.card {
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  border-color: rgba(148, 163, 184, 0.25) !important;
+}
+
+.ht-cardHover {
+  cursor: default;
+}
+.ht-cardHover:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.ht-statCard {
+  border-left: 5px solid rgba(245, 158, 11, 0.85);
+}
+[data-theme="dark"] .ht-statCard {
+  border-left-color: rgba(251, 191, 36, 0.8);
+}
+
+.ht-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  border-radius: 999px;
+  padding: 0.35rem 0.7rem;
+  background: var(--color-surface-2);
+  border: 1px solid var(--border-color);
+  color: var(--color-text);
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.ht-btn {
+  border-radius: 14px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.01em;
+}
+.ht-btnPrimary {
+  background: linear-gradient(180deg, rgba(30, 58, 95, 1), rgba(16, 36, 61, 1)) !important;
+  border-color: rgba(16, 36, 61, 1) !important;
+}
+.ht-btnPrimary:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+.ht-btn:active {
+  transform: translateY(0);
+}
+.ht-btn:disabled,
+.ht-btn.disabled {
+  opacity: 0.65;
+  transform: none !important;
+}
+.ht-btnAccent {
+  background: linear-gradient(180deg, rgba(245, 158, 11, 1), rgba(251, 146, 60, 1)) !important;
+  border-color: rgba(245, 158, 11, 1) !important;
+  color: #111827 !important;
+}
+.ht-btnAccent:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.02);
+}
+.ht-btnGhost {
+  background: transparent !important;
+  border-color: rgba(148, 163, 184, 0.35) !important;
+}
+.ht-btnGhost:hover {
+  background: rgba(148, 163, 184, 0.12) !important;
+}
+
+.table {
+  border-color: rgba(148, 163, 184, 0.22) !important;
+}
+.table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.22) !important;
+}
+[data-theme="dark"] .table thead th {
+  background: var(--color-surface-2);
+}
+.table tbody tr:hover {
+  background: rgba(245, 158, 11, 0.06) !important;
+}
+
+.badge {
+  border-radius: 999px !important;
+  padding: 0.45rem 0.65rem !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.02em;
+}
+
+.ht-scanGlow:focus {
+  box-shadow: 0 0 0 0.25rem rgba(245, 158, 11, 0.2), 0 20px 50px rgba(245, 158, 11, 0.12) !important;
+}
+
+/* Input group icons */
+.input-group-text {
+  border-radius: 14px 0 0 14px;
+  background: var(--color-surface-2);
+  border-color: rgba(148, 163, 184, 0.25);
+  color: var(--color-muted);
+}
+[data-theme="dark"] .input-group-text {
+  border-color: rgba(148, 163, 184, 0.18);
+}
+
+[data-theme="dark"] .form-control,
+[data-theme="dark"] .form-select {
+  background-color: var(--color-surface-2);
+  color: var(--color-text);
+  border-color: rgba(148, 163, 184, 0.22);
+}
+
+[data-theme="dark"] .form-control::placeholder {
+  color: rgba(148, 163, 184, 0.8);
+}
+
+[data-theme="dark"] .form-control:disabled,
+[data-theme="dark"] .form-select:disabled {
+  background-color: rgba(255, 255, 255, 0.06);
+  color: rgba(148, 163, 184, 0.75);
+}
+
+/* Modals (custom ones in /shared) */
+.ht-modalBackdrop {
+  background: rgba(2, 6, 23, 0.55) !important;
+}
+[data-theme="dark"] .ht-modalBackdrop {
+  background: rgba(0, 0, 0, 0.65) !important;
+}
+.ht-modalCard {
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  box-shadow: var(--shadow-md);
+}
+
+/* Auth */
+.ht-authWrap {
+  position: relative;
+  padding: 1.25rem;
+}
+
+.ht-authBackdrop {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(1000px 600px at 15% 10%, rgba(245, 158, 11, 0.22), transparent 55%),
+    radial-gradient(900px 500px at 85% 0%, rgba(30, 58, 95, 0.35), transparent 55%),
+    linear-gradient(180deg, rgba(15, 23, 42, 0.05), rgba(15, 23, 42, 0));
+  z-index: 0;
+}
+
+[data-theme="dark"] .ht-authBackdrop {
+  background: radial-gradient(1000px 600px at 15% 10%, rgba(251, 191, 36, 0.14), transparent 60%),
+    radial-gradient(900px 500px at 85% 0%, rgba(110, 168, 254, 0.16), transparent 60%),
+    linear-gradient(180deg, rgba(2, 6, 23, 0.35), rgba(2, 6, 23, 0.05));
+}
+
+.ht-authModal {
+  position: relative;
+  z-index: 1;
+  width: min(520px, 100%);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.72));
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+
+[data-theme="dark"] .ht-authModal {
+  border-color: rgba(148, 163, 184, 0.18);
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.92), rgba(15, 23, 42, 0.72));
+}
+
+.ht-authHeader {
+  padding: 1.25rem 1.25rem 0.75rem;
+}
+
+.ht-authBody {
+  padding: 1rem 1.25rem 1.25rem;
+}
+
+@media (max-width: 576px) {
+  .ht-authHeader {
+    padding: 1.1rem 1rem 0.6rem;
+  }
+  .ht-authBody {
+    padding: 0.9rem 1rem 1.1rem;
+  }
+}
