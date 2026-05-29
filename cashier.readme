@@ -32,7 +32,8 @@ Scan and search
 
 - Use the Scan / Search field to find a product by barcode, RFID, or product code.
 - Most scanners act like keyboards and type the code directly into the field.
-- After scanning, the app searches the product and adds it to the cart.
+- After scanning or typing, press Enter to search the product and add it to the cart.
+- Manual typing does not auto-submit.
 
 Cart editing
 
@@ -47,6 +48,30 @@ Payment
 - Cash shows the amount received from the customer.
 - Change is calculated automatically.
 - Complete Sale submits the transaction and creates the receipt.
+- The current POS draft is saved automatically, so a refresh or return to the POS page restores the cart and payment fields.
+
+Receipt Format
+
+The receipt is formatted like a small counter receipt so it can print cleanly on thermal or regular printers.
+
+It includes:
+
+- Store name and receipt title
+- Receipt number
+- Date and time
+- Cashier name
+- Item list with quantity, unit price, and line total
+- Subtotal, discount, total, cash received, and change
+- A short thank-you note at the bottom
+
+To print the receipt:
+
+1. Complete the sale.
+2. When the receipt window opens, click Print to open the printer settings panel.
+3. Choose the paper size and receipt density.
+4. Type the printer name as a reminder of the device you want to use.
+5. Click Open Print Dialog.
+6. Choose your installed printer in the browser print dialog and confirm the paper settings.
 
 Mouse Lock Mode
 
@@ -89,9 +114,39 @@ Tips
 - Check stock messages before finishing a sale.
 - Use Esc only when you need to click around the POS screen.
 
+Printer Setup Guide
+
+The POS prints through the browser print dialog, so the printer must already be available in Windows before you print from the app. HARDTRAC can format the receipt and open the print dialog, but the actual printer is selected in the browser window.
+
+Quick setup:
+
+1. Connect the printer to the computer with USB, Bluetooth, or network, depending on the model.
+2. Install the printer driver from the printer brand if Windows does not detect it automatically.
+3. Open Windows Settings or Control Panel and set the printer as the default printer.
+4. Open the printer preferences and choose the correct paper width:
+   - 80mm for most thermal receipt printers
+   - 58mm for smaller thermal printers
+   - A4 or Letter if you are using a regular office printer
+5. Disable headers and footers in the browser print dialog if they appear.
+6. Set margins to None or Minimum if the printer supports it.
+7. Print a test page from Windows first, then print a sales receipt from HARDTRAC.
+
+Recommended receipt printer settings:
+
+- Paper type: Receipt / Thermal
+- Paper width: 80mm is the usual default
+- Orientation: Portrait
+- Scale: 100% or Default
+- Margins: None or Minimum
+- Headers and footers: Off
+
 Troubleshooting
 
 - If a scan is not added, make sure the scan field is focused and press Enter again.
+- If you typed the barcode manually, the item will only add after you press Enter.
 - If the wrong field is active, press F1 to return to the scan box.
 - If the mouse is still locked, press Esc once.
 - If the sale will not finish, confirm that the cash received is enough to cover the total.
+- If the page refreshes or you navigate away, the POS should restore the saved draft automatically.
+- If the receipt print looks cut off, lower the browser scale or use the correct paper width in the printer settings.
+- If the printer does not appear, make sure it is installed in Windows and set as the default printer.

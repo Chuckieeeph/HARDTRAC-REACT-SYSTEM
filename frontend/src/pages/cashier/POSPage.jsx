@@ -5,6 +5,67 @@ import Toast from "../../shared/Toast.jsx";
 import ReceiptModal from "../../shared/ReceiptModal.jsx";
 import { money } from "../../utils/format.js";
 
+const POS_DRAFT_STORAGE_KEY = "hardtrac_pos_draft";
+
+function loadPosDraft() {
+  if (typeof window === "undefined") {
+    return { cart: [], discountAmount: 0, cashReceived: 0 };
+  }
+
+  try {
+    const rawDraft = window.localStorage.getItem(POS_DRAFT_STORAGE_KEY);
+    if (!rawDraft) return { cart: [], discountAmount: 0, cashReceived: 0 };
+
+    const parsedDraft = JSON.parse(rawDraft);
+    const cart = Array.isArray(parsedDraft.cart)
+      ? parsedDraft.cart
+          .map((item) => ({
+            productId: Number(item.productId),
+            name: String(item.name || ""),
+            unitPrice: Number(item.unitPrice || 0),
+            stock: Number(item.stock || 0),
+            qty: Number(item.qty || 1)
+          }))
+          .filter((item) => item.productId && item.name)
+      : [];
+
+    return {
+      cart,
+      discountAmount: Number(parsedDraft.discountAmount || 0),
+      cashReceived: Number(parsedDraft.cashReceived || 0)
+    };
+  } catch {
+    return { cart: [], discountAmount: 0, cashReceived: 0 };
+  }
+}
+
+function savePosDraft(draft) {
+  if (typeof window === "undefined") return;
+
+  const normalizedCart = Array.isArray(draft.cart) ? draft.cart : [];
+  const discountAmount = Number(draft.discountAmount || 0);
+  const cashReceived = Number(draft.cashReceived || 0);
+
+  if (!normalizedCart.length && discountAmount === 0 && cashReceived === 0) {
+    window.localStorage.removeItem(POS_DRAFT_STORAGE_KEY);
+    return;
+  }
+
+  window.localStorage.setItem(
+    POS_DRAFT_STORAGE_KEY,
+    JSON.stringify({
+      cart: normalizedCart,
+      discountAmount,
+      cashReceived
+    })
+  );
+}
+
+function clearPosDraft() {
+  if (typeof window === "undefined") return;
+  window.localStorage.removeItem(POS_DRAFT_STORAGE_KEY);
+}
+
 /**
  * Barcode/RFID scanner behavior (practical local web approach):
  * - Most USB barcode scanners and RFID readers "type" characters like a keyboard and often send an Enter key at the end.
@@ -18,14 +79,19 @@ export default function POSPage() {
   const posStatusLabel = isPosInactive ? "INACTIVE" : "ACTIVE";
 
   const scanRef = useRef(null);
-  const scanSubmitTimerRef = useRef(null);
   const discountRef = useRef(null);
   const cashRef = useRef(null);
   const completeRef = useRef(null);
   const [scanCode, setScanCode] = useState("");
-  const [cart, setCart] = useState([]); // {productId, name, unitPrice, stock, qty}
-  const [discountAmount, setDiscountAmount] = useState(0);
-  const [cashReceived, setCashReceived] = useState(0);
+  const savedDraft = useMemo(() => loadPosDraft(), []);
+  const [cart, setCart] = useState(savedDraft.cart); // {productId, name, unitPrice, stock, qty}
+  const [discountAmount, setDiscountAmount] = useState(savedDraft.discountAmount);
+  const [cashReceived, setCashReceived] = useState(savedDraft.cashReceived);
+  const draftStateRef = useRef({
+    cart: savedDraft.cart,
+    discountAmount: savedDraft.discountAmount,
+    cashReceived: savedDraft.cashReceived
+  });
   const [submitting, setSubmitting] = useState(false);
   const [toast, setToast] = useState({ show: false, message: "", variant: "success" });
   const [receipt, setReceipt] = useState(null);
@@ -36,18 +102,34 @@ export default function POSPage() {
   }, []);
 
   useEffect(() => {
-    return () => {
-      if (scanSubmitTimerRef.current) {
-        window.clearTimeout(scanSubmitTimerRef.current);
-      }
-    };
-  }, []);
-
-  useEffect(() => {
     if (!posIntroOpen && !isPosInactive) {
       scanRef.current?.focus();
     }
   }, [posIntroOpen, isPosInactive]);
+
+  useEffect(() => {
+    const nextDraft = {
+      cart,
+      discountAmount: Number(discountAmount || 0),
+      cashReceived: Number(cashReceived || 0)
+    };
+    draftStateRef.current = nextDraft;
+    savePosDraft(nextDraft);
+  }, [cart, discountAmount, cashReceived]);
+
+  useEffect(() => {
+    function persistDraft() {
+      savePosDraft(draftStateRef.current);
+    }
+
+    window.addEventListener("beforeunload", persistDraft);
+    window.addEventListener("pagehide", persistDraft);
+    return () => {
+      persistDraft();
+      window.removeEventListener("beforeunload", persistDraft);
+      window.removeEventListener("pagehide", persistDraft);
+    };
+  }, []);
 
   useEffect(() => {
     function onKeyDown(e) {
@@ -94,10 +176,6 @@ export default function POSPage() {
     if (isPosInactive) return;
     const value = code.trim();
     if (!value) return;
-    if (scanSubmitTimerRef.current) {
-      window.clearTimeout(scanSubmitTimerRef.current);
-      scanSubmitTimerRef.current = null;
-    }
     try {
       const { data } = await api.get("/products/search", { params: { code: value } });
       const p = data.product;
@@ -138,24 +216,6 @@ export default function POSPage() {
     }
   }
 
-  function queueScanSubmit(nextValue) {
-    if (isPosInactive) return;
-    if (scanSubmitTimerRef.current) {
-      window.clearTimeout(scanSubmitTimerRef.current);
-    }
-
-    const trimmed = nextValue.trim();
-    if (trimmed.length < 3) {
-      scanSubmitTimerRef.current = null;
-      return;
-    }
-
-    scanSubmitTimerRef.current = window.setTimeout(() => {
-      scanSubmitTimerRef.current = null;
-      findAndAdd(trimmed);
-    }, 180);
-  }
-
   function setQty(productId, qty) {
     setCart((prev) =>
       prev
@@ -180,6 +240,7 @@ export default function POSPage() {
       setCart([]);
       setDiscountAmount(0);
       setCashReceived(0);
+      clearPosDraft();
       setToast({ show: true, message: "Sale completed", variant: "success" });
     } catch (err) {
       setToast({ show: true, message: err?.response?.data?.message || "Sale failed", variant: "danger" });
@@ -258,20 +319,18 @@ export default function POSPage() {
                 value={scanCode}
                 disabled={isPosInactive}
                 onChange={(e) => {
-                  const nextValue = e.target.value;
-                  setScanCode(nextValue);
-                  queueScanSubmit(nextValue);
+                  setScanCode(e.target.value);
                 }}
                 aria-keyshortcuts="F1 Enter"
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     e.preventDefault();
-                    findAndAdd(scanCode);
+                    findAndAdd(e.currentTarget.value);
                   }
                 }}
               />
               <div className="text-muted small mt-2">
-                Tip: scanners usually act like keyboards; keep this field focused. The item will auto-add after a short pause, or press <span className="ht-kbd">Enter</span> after typing.
+                Tip: scanners usually act like keyboards and often send <span className="ht-kbd">Enter</span> automatically. If you type the barcode manually, press <span className="ht-kbd">Enter</span> to add the item.
               </div>
             </div>
           </div>
