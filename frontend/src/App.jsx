@@ -47,15 +47,18 @@ export default function App() {
             <Route path="/admin/categories" element={<CategoriesPage />} />
             <Route path="/admin/suppliers" element={<SuppliersPage />} />
             <Route path="/admin/users" element={<UsersPage />} />
-            <Route path="/admin/inventory" element={<InventoryPage />} />
             <Route path="/admin/stock-adjust" element={<StockAdjustmentPage />} />
             <Route path="/admin/reports/sales" element={<SalesReportsPage />} />
-            <Route path="/admin/reports/low-stock" element={<LowStockReportPage />} />
             <Route path="/admin/audit-logs" element={<AuditLogsPage />} />
           </Route>
 
+          <Route element={<RoleBasedRoute allow={["admin", "head-cashier"]} />}>
+            <Route path="/admin/inventory" element={<InventoryPage />} />
+            <Route path="/admin/reports/low-stock" element={<LowStockReportPage />} />
+          </Route>
+
           {/* Cashier routes */}
-          <Route element={<RoleBasedRoute allow={["cashier", "admin"]} />}>
+          <Route element={<RoleBasedRoute allow={["cashier", "head-cashier", "admin"]} />}>
             <Route path="/pos" element={<POSPage />} />
             <Route path="/my-transactions" element={<MyTransactionsPage />} />
           </Route>

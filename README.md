@@ -39,6 +39,19 @@ copy .env.example .env
 npm run seed
 ```
 
+If your database already exists, re-running `npm run seed` will recreate the tables with the updated roles and void columns.
+
+## Restore Backup Database
+
+To load your previous database backup into the current `hardtrac_db` database, run:
+
+```
+cd backend
+npm run restore-backup
+```
+
+This restores `database/hardtrac_db_backup.sql`, drops the current tables first, then reapplies the newer app columns and the `headcashier / HeadCashier123!` demo account.
+
 > Note: `backend/.env.example` uses Laragon defaults: MySQL user `root` with empty password.
 
 ## 2) Backend Setup (Express API)
@@ -88,8 +101,11 @@ Created by `npm run seed` (backend):
 - Cashier
   - Username: `cashier`
   - Password: `Cashier123!`
+- Head Cashier
+  - Username: `headcashier`
+  - Password: `HeadCashier123!`
 
-If you changed these users before, re-run `npm run seed` to reset the demo passwords.
+If you changed these users before, re-run `npm run seed` to reset the demo passwords and recreate the head-cashier account.
 
 ## Barcode + RFID Scanner Usage (Important)
 
@@ -102,6 +118,7 @@ Practical local web approach:
   - Scan a barcode or RFID tag
   - The code is searched in the database and the matching product is added to cart
 - No hardware required: you can manually type the code and press **Enter**.
+- After clicking **Enter POS**, the cashier can use the sidebar to check inventory and low-stock screens.
 
 Matching fields used by the POS scan:
 
@@ -113,6 +130,7 @@ Matching fields used by the POS scan:
 
 - Admin can access inventory management, users, reports, audit logs, and stock adjustments.
 - Cashier can access POS and their own transactions only.
+- Head cashier can access POS, transactions, inventory, and low-stock views, and can void completed sales.
 - Backend enforces roles on protected endpoints (cashier cannot access admin APIs).
 
 ## Notes / Tips

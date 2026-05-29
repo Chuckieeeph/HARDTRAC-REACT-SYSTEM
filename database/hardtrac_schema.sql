@@ -18,7 +18,7 @@ CREATE TABLE users (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT,
   username VARCHAR(50) NOT NULL,
   password_hash VARCHAR(255) NOT NULL,
-  role ENUM('admin','cashier') NOT NULL DEFAULT 'cashier',
+  role ENUM('admin','cashier','head-cashier') NOT NULL DEFAULT 'cashier',
   full_name VARCHAR(120) NOT NULL,
   status ENUM('active','inactive') NOT NULL DEFAULT 'active',
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -82,7 +82,7 @@ CREATE TABLE products (
 CREATE TABLE inventory_movements (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   product_id INT UNSIGNED NOT NULL,
-  movement_type ENUM('sale','manual_add','adjustment','init') NOT NULL,
+  movement_type ENUM('sale','manual_add','adjustment','void','init') NOT NULL,
   qty_change INT NOT NULL,
   reason VARCHAR(255) NULL,
   reference_type VARCHAR(30) NULL,
@@ -106,12 +106,18 @@ CREATE TABLE sales (
   total_amount DECIMAL(10,2) NOT NULL DEFAULT 0.00,
   cash_received DECIMAL(10,2) NOT NULL DEFAULT 0.00,
   change_amount DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+  voided_at TIMESTAMP NULL DEFAULT NULL,
+  voided_by INT UNSIGNED NULL,
+  void_reason VARCHAR(255) NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   KEY idx_sales_created (created_at),
   KEY idx_sales_cashier (cashier_id),
+  KEY idx_sales_voided (voided_at),
   CONSTRAINT fk_sales_cashier FOREIGN KEY (cashier_id) REFERENCES users (id)
-    ON UPDATE CASCADE ON DELETE RESTRICT
+    ON UPDATE CASCADE ON DELETE RESTRICT,
+  CONSTRAINT fk_sales_voided_by FOREIGN KEY (voided_by) REFERENCES users (id)
+    ON UPDATE CASCADE ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE sale_items (
@@ -145,4 +151,3 @@ CREATE TABLE audit_logs (
   CONSTRAINT fk_audit_user FOREIGN KEY (user_id) REFERENCES users (id)
     ON UPDATE CASCADE ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-

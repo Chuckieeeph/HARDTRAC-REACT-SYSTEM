@@ -9,7 +9,7 @@ const router = Router();
 router.use(requireAuth);
 
 router.get("/admin-dashboard", requireRole("admin"), adminDashboard);
-router.get("/cashier-dashboard", requireRole("cashier", "admin"), cashierDashboard);
+router.get("/cashier-dashboard", requireRole("cashier", "head-cashier", "admin"), cashierDashboard);
 
 router.get(
   "/sales-summary",

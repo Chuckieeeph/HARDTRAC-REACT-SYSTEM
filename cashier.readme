@@ -1,0 +1,97 @@
+HARDTRAC Cashier POS Guide
+
+Overview
+
+The cashier POS is designed for fast, keyboard-first checkout.
+When you open the POS page, mouse input is locked by default so the cashier can stay focused on the scan and payment flow.
+Press Esc at any time to unlock mouse clicks.
+Press Esc again to return to keyboard-only mode.
+
+Getting Started
+
+1. Log in with a cashier account.
+2. Open POS from the cashier menu.
+3. Keep the scan field active and scan a barcode or RFID tag.
+4. Review the cart, apply a discount if needed, then enter the cash received.
+5. Complete the sale when the total is correct.
+
+Keyboard Reference
+
+- Esc: Toggle mouse mode on or off.
+- F1: Focus the Scan / Search field.
+- Enter: Add the scanned item while the scan field is active.
+- F2: Jump to the Discount field.
+- F3: Jump to the Cash received field.
+- F4: Complete the sale.
+- Tab: Move through the page controls in order.
+- Shift+Tab: Move backward through the controls.
+
+POS Workflow
+
+Scan and search
+
+- Use the Scan / Search field to find a product by barcode, RFID, or product code.
+- Most scanners act like keyboards and type the code directly into the field.
+- After scanning, the app searches the product and adds it to the cart.
+
+Cart editing
+
+- Use the plus and minus buttons to change quantity.
+- Use Remove to clear an item from the cart.
+- Stock limits are enforced, so the POS will stop you from adding more than what is available.
+
+Payment
+
+- Subtotal shows the cart total before discount.
+- Discount lets the cashier reduce the total amount.
+- Cash shows the amount received from the customer.
+- Change is calculated automatically.
+- Complete Sale submits the transaction and creates the receipt.
+
+Mouse Lock Mode
+
+Keyboard-only mode is the default cashier mode.
+This keeps the checkout process fast and reduces accidental clicks.
+When the POS entry card appears, press the Enter POS button or press Enter to continue.
+
+While locked:
+
+- Mouse clicks are blocked on the POS page.
+- The interface expects keyboard input only.
+- Shortcut hints are visible on the POS screen.
+
+After pressing Esc:
+
+- Mouse clicks become usable again.
+- You can click buttons, inputs, and other interface controls.
+- Press Esc again to return to keyboard-only mode.
+
+Shortcut Hints Shown in POS
+
+- F1: Focus the scan box.
+- F2: Jump to discount.
+- F3: Jump to cash.
+- F4: Complete the sale.
+- Esc: Unlock the mouse.
+
+Recommended Cashier Flow
+
+1. Press F1 and scan the item.
+2. Repeat scanning until the cart is complete.
+3. Press F2 only if a discount is needed.
+4. Press F3 and type the cash received.
+5. Press F4 to finish the sale.
+
+Tips
+
+- Keep the scan field ready for the next item.
+- Use the keyboard shortcuts for speed.
+- Check stock messages before finishing a sale.
+- Use Esc only when you need to click around the POS screen.
+
+Troubleshooting
+
+- If a scan is not added, make sure the scan field is focused and press Enter again.
+- If the wrong field is active, press F1 to return to the scan box.
+- If the mouse is still locked, press Esc once.
+- If the sale will not finish, confirm that the cash received is enough to cover the total.

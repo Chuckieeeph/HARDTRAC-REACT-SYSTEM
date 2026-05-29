@@ -113,6 +113,9 @@ function MenuLink({ to, label, icon, onNavigate }) {
 
 export default function Sidebar({ onNavigate }) {
   const { user } = useAuth();
+  const isAdmin = user?.role === "admin";
+  const isCashier = user?.role === "cashier";
+  const isHeadCashier = user?.role === "head-cashier";
 
   return (
     <aside className="ht-sidebar">
@@ -127,7 +130,7 @@ export default function Sidebar({ onNavigate }) {
       <nav className="pb-3">
         <MenuLink to="/dashboard" label="Dashboard" icon="dashboard" onNavigate={onNavigate} />
 
-        {user?.role === "admin" && (
+        {isAdmin && (
           <>
             <div className="ht-navSection">Admin</div>
             <MenuLink to="/admin/products" label="Products" icon="box" onNavigate={onNavigate} />
@@ -139,14 +142,21 @@ export default function Sidebar({ onNavigate }) {
             <MenuLink to="/admin/reports/sales" label="Sales Reports" icon="report" onNavigate={onNavigate} />
             <MenuLink to="/admin/reports/low-stock" label="Low Stock" icon="report" onNavigate={onNavigate} />
             <MenuLink to="/admin/audit-logs" label="Audit Logs" icon="shield" onNavigate={onNavigate} />
+            <MenuLink to="/my-transactions" label="Transactions" icon="receipt" onNavigate={onNavigate} />
           </>
         )}
 
-        {user?.role === "cashier" && (
+        {(isCashier || isHeadCashier) && (
           <>
-            <div className="ht-navSection">Cashier</div>
+            <div className="ht-navSection">{isHeadCashier ? "Head Cashier" : "Cashier"}</div>
             <MenuLink to="/pos" label="POS" icon="pos" onNavigate={onNavigate} />
             <MenuLink to="/my-transactions" label="My Transactions" icon="receipt" onNavigate={onNavigate} />
+            {isHeadCashier && (
+              <>
+                <MenuLink to="/admin/inventory" label="Inventory" icon="inventory" onNavigate={onNavigate} />
+                <MenuLink to="/admin/reports/low-stock" label="Low Stock" icon="report" onNavigate={onNavigate} />
+              </>
+            )}
           </>
         )}
       </nav>

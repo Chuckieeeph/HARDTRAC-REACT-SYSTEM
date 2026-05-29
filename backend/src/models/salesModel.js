@@ -1,4 +1,5 @@
 import { db } from "../config/db.js";
+import { httpError } from "../utils/httpError.js";
 
 export async function createSale({ cashierId, subtotal, discountAmount, totalAmount, cashReceived, changeAmount, items }) {
   const connection = await db.getConnection();
@@ -70,9 +71,11 @@ export async function createSale({ cashierId, subtotal, discountAmount, totalAmo
 
     const [saleRows] = await db.query(
       `
-      SELECT s.*, u.username AS cashier_username, u.full_name AS cashier_name
+      SELECT s.*, u.username AS cashier_username, u.full_name AS cashier_name,
+        v.username AS voided_by_username, v.full_name AS voided_by_name
       FROM sales s
       LEFT JOIN users u ON u.id = s.cashier_id
+      LEFT JOIN users v ON v.id = s.voided_by
       WHERE s.id = ?
       `,
       [saleId]
@@ -118,9 +121,11 @@ export async function listSales({ from, to, cashierId } = {}) {
 
   const [rows] = await db.query(
     `
-    SELECT s.*, u.username AS cashier_username, u.full_name AS cashier_name
+    SELECT s.*, u.username AS cashier_username, u.full_name AS cashier_name,
+      v.username AS voided_by_username, v.full_name AS voided_by_name
     FROM sales s
     LEFT JOIN users u ON u.id = s.cashier_id
+    LEFT JOIN users v ON v.id = s.voided_by
     ${sqlWhere}
     ORDER BY s.id DESC
     `,
@@ -132,9 +137,11 @@ export async function listSales({ from, to, cashierId } = {}) {
 export async function getSaleById(saleId) {
   const [saleRows] = await db.query(
     `
-    SELECT s.*, u.username AS cashier_username, u.full_name AS cashier_name
+    SELECT s.*, u.username AS cashier_username, u.full_name AS cashier_name,
+      v.username AS voided_by_username, v.full_name AS voided_by_name
     FROM sales s
     LEFT JOIN users u ON u.id = s.cashier_id
+    LEFT JOIN users v ON v.id = s.voided_by
     WHERE s.id = ?
     LIMIT 1
     `,
@@ -157,3 +164,64 @@ export async function getSaleById(saleId) {
   return { sale, items: itemRows };
 }
 
+export async function voidSale({ saleId, voidedBy, reason }) {
+  const connection = await db.getConnection();
+  const voidReason = (reason || "Sale voided").trim();
+
+  try {
+    await connection.beginTransaction();
+
+    const [saleRows] = await connection.query(
+      `
+      SELECT id, cashier_id, subtotal, discount_amount, total_amount, cash_received, change_amount, voided_at
+      FROM sales
+      WHERE id = ?
+      FOR UPDATE
+      `,
+      [saleId]
+    );
+    const sale = saleRows[0];
+    if (!sale) throw httpError(404, "Sale not found");
+    if (sale.voided_at) throw httpError(400, "Sale has already been voided");
+
+    const [itemRows] = await connection.query(
+      `
+      SELECT id, product_id, qty, unit_price, line_total
+      FROM sale_items
+      WHERE sale_id = ?
+      FOR UPDATE
+      `,
+      [saleId]
+    );
+    if (!itemRows.length) throw httpError(400, "Sale items not found");
+
+    for (const item of itemRows) {
+      await connection.query("UPDATE products SET current_stock = current_stock + ? WHERE id = ?", [item.qty, item.product_id]);
+      await connection.query(
+        `
+        INSERT INTO inventory_movements
+          (product_id, movement_type, qty_change, reason, reference_type, reference_id, performed_by)
+        VALUES (?, 'void', ?, ?, 'sale_void', ?, ?)
+        `,
+        [item.product_id, item.qty, voidReason, saleId, voidedBy]
+      );
+    }
+
+    await connection.query(
+      `
+      UPDATE sales
+      SET voided_at = NOW(), voided_by = ?, void_reason = ?
+      WHERE id = ?
+      `,
+      [voidedBy, voidReason, saleId]
+    );
+
+    await connection.commit();
+    return getSaleById(saleId);
+  } catch (err) {
+    await connection.rollback();
+    throw err;
+  } finally {
+    connection.release();
+  }
+}

@@ -64,6 +64,10 @@
     width: 100%;
     justify-content: center;
   }
+
+  .ht-shortcutGrid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .ht-fieldNarrow {

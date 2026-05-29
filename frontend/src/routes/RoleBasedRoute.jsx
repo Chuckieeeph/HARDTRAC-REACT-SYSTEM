@@ -15,7 +15,7 @@ export default function RoleBasedRoute({ allow, admin, cashier }) {
   // Dashboard switch mode
   if (admin !== undefined || cashier !== undefined) {
     if (user.role === "admin") return admin ?? <Navigate to="/dashboard" replace />;
-    if (user.role === "cashier") return cashier ?? <Navigate to="/dashboard" replace />;
+    if (user.role === "cashier" || user.role === "head-cashier") return cashier ?? <Navigate to="/dashboard" replace />;
     return <Navigate to="/login" replace />;
   }
 

@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { api } from "../../services/api.js";
+import { useAuth } from "../../context/AuthContext.jsx";
+import ConfirmModal from "../../shared/ConfirmModal.jsx";
 import { money } from "../../utils/format.js";
 
 export default function MyTransactionsPage() {
+  const { user } = useAuth();
   const [sales, setSales] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [expanded, setExpanded] = useState(null);
+  const [voidTarget, setVoidTarget] = useState(null);
+
+  const canVoid = user?.role === "admin" || user?.role === "head-cashier";
 
   async function load() {
     setLoading(true);
@@ -34,13 +40,28 @@ export default function MyTransactionsPage() {
     }
   }
 
+  async function voidSale() {
+    if (!voidTarget) return;
+    try {
+      await api.post(`/sales/${voidTarget.id}/void`);
+      setVoidTarget(null);
+      setExpanded(null);
+      await load();
+    } catch (err) {
+      alert(err?.response?.data?.message || "Failed to void sale");
+    }
+  }
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div className="alert alert-danger">{error}</div>;
 
   return (
     <>
       <div className="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between gap-2 mb-3">
-        <h4 className="mb-0 ht-title">My Transactions</h4>
+        <div>
+          <h4 className="mb-0 ht-title">{canVoid ? "Transactions" : "My Transactions"}</h4>
+          {canVoid && <div className="ht-muted small">Admins and head-cashiers can void completed sales.</div>}
+        </div>
         <button className="btn btn-outline-secondary ht-btn ht-btnGhost" onClick={load}>
           Refresh
         </button>
@@ -53,26 +74,35 @@ export default function MyTransactionsPage() {
               <tr>
                 <th>ID</th>
                 <th>Date</th>
+                <th>Status</th>
                 <th className="text-end">Total</th>
-                <th style={{ width: 120 }} />
+                <th style={{ width: 220 }} />
               </tr>
             </thead>
             <tbody>
               {sales.map((s) => (
-                <tr key={s.id}>
+                <tr key={s.id} className={s.voided_at ? "table-warning" : ""}>
                   <td>{s.id}</td>
                   <td className="text-muted small">{new Date(s.created_at).toLocaleString()}</td>
+                  <td>{s.voided_at ? <span className="badge text-bg-danger">Voided</span> : <span className="badge text-bg-success">Completed</span>}</td>
                   <td className="text-end fw-semibold">{money(s.total_amount)}</td>
                   <td className="text-end">
-                    <button className="btn btn-sm btn-outline-primary ht-btn ht-btnGhost" onClick={() => viewSale(s.id)}>
-                      View
-                    </button>
+                    <div className="d-inline-flex gap-2">
+                      <button className="btn btn-sm btn-outline-primary ht-btn ht-btnGhost" onClick={() => viewSale(s.id)}>
+                        View
+                      </button>
+                      {canVoid && !s.voided_at && (
+                        <button className="btn btn-sm btn-outline-danger ht-btn" onClick={() => setVoidTarget(s)}>
+                          Void
+                        </button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}
               {sales.length === 0 && (
                 <tr>
-                  <td colSpan="4" className="text-center text-muted py-4">
+                  <td colSpan="5" className="text-center text-muted py-4">
                     No transactions yet.
                   </td>
                 </tr>
@@ -92,6 +122,15 @@ export default function MyTransactionsPage() {
               </button>
             </div>
             <div className="text-muted small">{new Date(expanded.sale.created_at).toLocaleString()}</div>
+            {expanded.sale.voided_at && (
+              <div className="alert alert-warning py-2 mt-3 mb-0">
+                Voided on {new Date(expanded.sale.voided_at).toLocaleString()}
+                {expanded.sale.voided_by_name || expanded.sale.voided_by_username
+                  ? ` by ${expanded.sale.voided_by_name || expanded.sale.voided_by_username}`
+                  : ""}
+                {expanded.sale.void_reason ? ` - ${expanded.sale.void_reason}` : ""}
+              </div>
+            )}
             <hr />
             <div className="table-responsive">
               <table className="table table-sm mb-0">
@@ -118,6 +157,19 @@ export default function MyTransactionsPage() {
           </div>
         </div>
       )}
+
+      <ConfirmModal
+        show={Boolean(voidTarget)}
+        title="Void Sale"
+        body={
+          <div>
+            Void sale <b>#{voidTarget?.id}</b>? Stock will be restored and the transaction will be marked as voided.
+          </div>
+        }
+        confirmText="Void Sale"
+        onConfirm={voidSale}
+        onClose={() => setVoidTarget(null)}
+      />
     </>
   );
 }

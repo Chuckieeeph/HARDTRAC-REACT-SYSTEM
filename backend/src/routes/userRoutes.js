@@ -14,22 +14,22 @@ router.get("/", getAllUsers);
 router.post(
   "/",
   validate({
-    body: z.object({
-      username: z.string().min(3),
-      password: z.string().min(6),
-      role: z.enum(["admin", "cashier"]),
-      fullName: z.string().min(1)
-    })
-  }),
+      body: z.object({
+        username: z.string().min(3),
+        password: z.string().min(6),
+        role: z.enum(["admin", "cashier", "head-cashier"]),
+        fullName: z.string().min(1)
+      })
+    }),
   createNewUser
 );
 
 router.patch(
   "/:id",
   validate({
-    body: z
+      body: z
       .object({
-        role: z.enum(["admin", "cashier"]).optional(),
+        role: z.enum(["admin", "cashier", "head-cashier"]).optional(),
         fullName: z.string().min(1).optional(),
         status: z.enum(["active", "inactive"]).optional()
       })
@@ -47,4 +47,3 @@ router.post(
 );
 
 export default router;
-

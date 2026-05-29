@@ -1,7 +1,7 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { httpError } from "../utils/httpError.js";
 import { addAuditLog } from "../models/auditModel.js";
-import { createSale, getSaleById, listSales } from "../models/salesModel.js";
+import { createSale, getSaleById, listSales, voidSale } from "../models/salesModel.js";
 
 export const createNewSale = asyncHandler(async (req, res) => {
   const { items, discountAmount, cashReceived } = req.validated.body;
@@ -50,5 +50,26 @@ export const getSale = asyncHandler(async (req, res) => {
   if (req.user.role === "cashier" && data.sale.cashier_id !== req.user.id) {
     throw httpError(403, "Forbidden");
   }
+  return res.json(data);
+});
+
+export const voidExistingSale = asyncHandler(async (req, res) => {
+  const saleId = Number(req.params.id);
+  const reason = req.validated.body.reason || "Sale voided";
+
+  const data = await voidSale({
+    saleId,
+    voidedBy: req.user.id,
+    reason
+  });
+
+  await addAuditLog({
+    userId: req.user.id,
+    action: "sale_voided",
+    entityType: "sale",
+    entityId: saleId,
+    details: { reason }
+  });
+
   return res.json(data);
 });

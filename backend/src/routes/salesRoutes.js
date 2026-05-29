@@ -3,14 +3,14 @@ import { z } from "zod";
 import { requireAuth } from "../middleware/auth.js";
 import { requireRole } from "../middleware/rbac.js";
 import { validate } from "../utils/validation.js";
-import { createNewSale, getSale, getSales } from "../controllers/salesController.js";
+import { createNewSale, getSale, getSales, voidExistingSale } from "../controllers/salesController.js";
 
 const router = Router();
 router.use(requireAuth);
 
 router.post(
   "/",
-  requireRole("cashier", "admin"),
+  requireRole("cashier", "head-cashier", "admin"),
   validate({
     body: z.object({
       discountAmount: z.number().nonnegative().optional().default(0),
@@ -43,5 +43,15 @@ router.get(
 
 router.get("/:id", getSale);
 
-export default router;
+router.post(
+  "/:id/void",
+  requireRole("admin", "head-cashier"),
+  validate({
+    body: z.object({
+      reason: z.string().min(1).max(255).optional()
+    })
+  }),
+  voidExistingSale
+);
 
+export default router;

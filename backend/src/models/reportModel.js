@@ -45,6 +45,7 @@ export async function getAdminDashboardSummary() {
       COALESCE(SUM(total_amount), 0) AS today_sales
     FROM sales
     WHERE DATE(created_at) = CURDATE()
+      AND voided_at IS NULL
     `
   );
 
@@ -65,6 +66,7 @@ export async function getCashierDashboardSummary(cashierId) {
     FROM sales
     WHERE cashier_id = ?
       AND DATE(created_at) = CURDATE()
+      AND voided_at IS NULL
     `,
     [cashierId]
   );
@@ -84,6 +86,7 @@ export async function getSalesSummary({ from, to } = {}) {
     where.push("created_at <= ?");
     params.push(to);
   }
+  where.push("voided_at IS NULL");
 
   const sqlWhere = where.length ? `WHERE ${where.join(" AND ")}` : "";
   const [rows] = await db.query(
@@ -112,6 +115,7 @@ export async function getBestSellers({ from, to, limit = 10 } = {}) {
     where.push("s.created_at <= ?");
     params.push(to);
   }
+  where.push("s.voided_at IS NULL");
 
   const sqlWhere = where.length ? `WHERE ${where.join(" AND ")}` : "";
   params.push(Number(limit));
@@ -139,7 +143,7 @@ export async function getBestSellers({ from, to, limit = 10 } = {}) {
 export async function getCashierPerformance({ from, to } = {}) {
   ({ from, to } = normalizeDateTimeBounds({ from, to }));
 
-  const where = ["u.role = 'cashier'"];
+  const where = ["u.role IN ('cashier', 'head-cashier')"];
   const params = [];
   const joinWhere = [];
 
@@ -151,6 +155,7 @@ export async function getCashierPerformance({ from, to } = {}) {
     joinWhere.push("s.created_at <= ?");
     params.push(to);
   }
+  joinWhere.push("s.voided_at IS NULL");
 
   const sqlWhere = `WHERE ${where.join(" AND ")}`;
   const sqlJoinWhere = joinWhere.length ? `AND ${joinWhere.join(" AND ")}` : "";

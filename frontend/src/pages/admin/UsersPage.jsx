@@ -60,7 +60,7 @@ export default function UsersPage() {
 
   return (
     <>
-      <h4 className="mb-3 ht-title">Users / Cashiers</h4>
+      <h4 className="mb-3 ht-title">Users / Cashiers / Head Cashiers</h4>
 
       <div className="card ht-cardHover mb-3">
         <div className="card-body">
@@ -74,6 +74,7 @@ export default function UsersPage() {
             <div className="col-md-2">
               <select className="form-select" value={form.role} onChange={(e) => setField("role", e.target.value)}>
                 <option value="cashier">Cashier</option>
+                <option value="head-cashier">Head Cashier</option>
                 <option value="admin">Admin</option>
               </select>
             </div>
@@ -108,6 +109,7 @@ export default function UsersPage() {
                     <select className="form-select form-select-sm" value={u.role} onChange={(e) => updateUser(u.id, { role: e.target.value })}>
                       <option value="admin">Admin</option>
                       <option value="cashier">Cashier</option>
+                      <option value="head-cashier">Head Cashier</option>
                     </select>
                   </td>
                   <td>

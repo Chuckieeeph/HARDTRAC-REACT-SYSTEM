@@ -99,6 +99,48 @@
   box-shadow: 0 0 0 0.25rem rgba(245, 158, 11, 0.2), 0 20px 50px rgba(245, 158, 11, 0.12) !important;
 }
 
+.ht-shortcutPanel {
+  background: linear-gradient(180deg, rgba(245, 158, 11, 0.06), rgba(30, 58, 95, 0.02));
+}
+
+.ht-shortcutGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.ht-shortcutItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.8rem 0.9rem;
+  border-radius: 16px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  background: var(--color-surface);
+}
+
+.ht-shortcutKey {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 52px;
+  padding: 0.35rem 0.55rem;
+  border-radius: 12px;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--color-text);
+}
+
+.ht-shortcutAction {
+  font-weight: 700;
+  color: var(--color-text);
+}
+
 /* Input group icons */
 .input-group-text {
   border-radius: 14px 0 0 14px;

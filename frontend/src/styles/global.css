@@ -17,6 +17,23 @@ body {
   overflow-x: hidden;
 }
 
+body.ht-posMouseLocked,
+body.ht-posMouseLocked * {
+  cursor: none;
+}
+
+.ht-posSidebarOnly,
+.ht-posSidebarOnly * {
+  cursor: auto !important;
+}
+
+.ht-posSidebarOnly .ht-sidebar a,
+.ht-posSidebarOnly .ht-sidebar button,
+.ht-posSidebarOnly .ht-sidebar .btn,
+.ht-posSidebarOnly .ht-sidebar [role="button"] {
+  cursor: pointer !important;
+}
+
 ::selection {
   background: rgba(245, 158, 11, 0.35);
 }

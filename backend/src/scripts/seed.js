@@ -30,8 +30,10 @@ async function run() {
     // Credentials for demo/testing:
     // - Admin:   admin / Admin123!
     // - Cashier: cashier / Cashier123!
+    // - Head Cashier: headcashier / HeadCashier123!
     const adminHash = await bcrypt.hash("Admin123!", 10);
     const cashierHash = await bcrypt.hash("Cashier123!", 10);
+    const headCashierHash = await bcrypt.hash("HeadCashier123!", 10);
 
     // Insert if not exists
     await connection.query(
@@ -57,6 +59,18 @@ async function run() {
         status = VALUES(status)
       `,
       [cashierHash]
+    );
+    await connection.query(
+      `
+      INSERT INTO users (username, password_hash, role, full_name, status)
+      VALUES ('headcashier', ?, 'head-cashier', 'Head Cashier', 'active')
+      ON DUPLICATE KEY UPDATE
+        password_hash = VALUES(password_hash),
+        role = VALUES(role),
+        full_name = VALUES(full_name),
+        status = VALUES(status)
+      `,
+      [headCashierHash]
     );
 
     await connection.commit();

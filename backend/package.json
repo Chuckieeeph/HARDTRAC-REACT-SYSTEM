@@ -7,6 +7,7 @@
     "dev": "node --watch src/server.js",
     "start": "node src/server.js",
     "seed": "node src/scripts/seed.js",
+    "restore-backup": "node src/scripts/restoreBackup.js",
     "add-products": "node src/scripts/addProducts.js"
   },
   "dependencies": {
