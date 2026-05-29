@@ -325,6 +325,23 @@ html[data-receipt-density="compact"] .ht-receiptSheet {
   font-weight: 800;
 }
 
+.ht-receiptSettingsControls {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.ht-receiptWidth58 {
+  width: 58mm;
+}
+
+.ht-receiptWidth80 {
+  width: 80mm;
+}
+
+.ht-receiptWidthA4 {
+  width: 100%;
+}
+
 .ht-receiptSheet {
   width: min(100%, 360px);
   max-width: 100%;
@@ -433,30 +450,30 @@ html[data-receipt-density="compact"] .ht-receiptSheet {
   .ht-receiptPrintRoot {
     position: fixed !important;
     inset: 0 !important;
-    width: 80mm !important;
-    max-width: 80mm !important;
+    width: auto !important;
+    max-width: none !important;
     margin: 0 auto !important;
     border: none !important;
     box-shadow: none !important;
     background: #fff !important;
+    max-height: none !important;
   }
 
   .ht-receiptDialog {
-    max-width: 80mm !important;
+    max-width: 100% !important;
     margin: 0 auto !important;
   }
 
   .ht-receiptActions,
   .ht-receiptClose,
-  .ht-receiptSettingsPanel,
-  .modal-backdrop,
-  .ht-modalBackdrop,
+  .ht-receiptSettingsControls,
   .btn-close {
     display: none !important;
   }
 
   .ht-receiptBody {
     background: #fff !important;
+    overflow: visible !important;
   }
 
   .ht-receiptSheet {
@@ -464,6 +481,18 @@ html[data-receipt-density="compact"] .ht-receiptSheet {
     border: none !important;
     border-radius: 0 !important;
     padding: 0 !important;
+  }
+
+  html[data-receipt-paper="58mm"] .ht-receiptSheet {
+    width: 58mm !important;
+  }
+
+  html[data-receipt-paper="80mm"] .ht-receiptSheet {
+    width: 80mm !important;
+  }
+
+  html[data-receipt-paper="A4"] .ht-receiptSheet {
+    width: 100% !important;
   }
 }
 

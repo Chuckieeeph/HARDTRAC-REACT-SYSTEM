@@ -45,6 +45,91 @@ function loadPrintSettings() {
   }
 }
 
+function ReceiptTicket({ sale, items, receiptNumber, receiptDate, printSettings, widthClass = "" }) {
+  return (
+    <div className={`ht-receiptSheet ${widthClass}`.trim()}>
+      <div className="text-center">
+        <div className="ht-receiptBrand">MVS Hardware</div>
+        <div className="ht-receiptShop">HARDTRAC POS Receipt</div>
+        <div className="ht-receiptMuted">Cashier sales slip</div>
+      </div>
+
+      <div className="ht-receiptDivider" />
+
+      <div className="ht-receiptMeta">
+        <div className="ht-receiptMetaRow">
+          <span>Receipt No.</span>
+          <span>#{receiptNumber}</span>
+        </div>
+        <div className="ht-receiptMetaRow">
+          <span>Date &amp; Time</span>
+          <span>{receiptDate}</span>
+        </div>
+        {printSettings.showCashier && (
+          <div className="ht-receiptMetaRow">
+            <span>Cashier</span>
+            <span>{sale.cashier_name || sale.cashier_username}</span>
+          </div>
+        )}
+      </div>
+
+      <div className="ht-receiptDivider" />
+
+      <div className="ht-receiptItems">
+        {items.map((it) => (
+          <div className="ht-receiptItem" key={it.id}>
+            <div className="ht-receiptItemTop">
+              <span className="ht-receiptItemName">{it.product_name}</span>
+              <span className="ht-receiptItemTotal">{money(it.line_total)}</span>
+            </div>
+            <div className="ht-receiptItemMeta">
+              <span>
+                {it.qty} x {money(it.unit_price)}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="ht-receiptDivider" />
+
+      <div className="ht-receiptTotals">
+        <div className="ht-receiptTotalRow">
+          <span>Subtotal</span>
+          <span>{money(sale.subtotal)}</span>
+        </div>
+        <div className="ht-receiptTotalRow">
+          <span>Discount</span>
+          <span>- {money(sale.discount_amount)}</span>
+        </div>
+        <div className="ht-receiptTotalRow ht-receiptGrandTotal">
+          <span>Total</span>
+          <span>{money(sale.total_amount)}</span>
+        </div>
+        <div className="ht-receiptTotalRow">
+          <span>Cash</span>
+          <span>{money(sale.cash_received)}</span>
+        </div>
+        <div className="ht-receiptTotalRow">
+          <span>Change</span>
+          <span>{money(sale.change_amount)}</span>
+        </div>
+      </div>
+
+      <div className="ht-receiptDivider" />
+
+      <div className="ht-receiptFooter">
+        {printSettings.showFooterNote && (
+          <>
+            <div>Thank you for shopping with us.</div>
+            <div>Please keep this receipt for warranty or returns.</div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function ReceiptModal({ show, data, onClose }) {
   if (!show || !data) return null;
   const { sale, items } = data;
@@ -53,9 +138,9 @@ export default function ReceiptModal({ show, data, onClose }) {
   const [showPrintSettings, setShowPrintSettings] = useState(false);
   const [printSettings, setPrintSettings] = useState(loadPrintSettings);
   const receiptWidth = useMemo(() => {
-    if (printSettings.paperSize === "58mm") return "58mm";
-    if (printSettings.paperSize === "A4") return "100%";
-    return "80mm";
+    if (printSettings.paperSize === "58mm") return "ht-receiptWidth58";
+    if (printSettings.paperSize === "A4") return "ht-receiptWidthA4";
+    return "ht-receiptWidth80";
   }, [printSettings.paperSize]);
 
   useEffect(() => {
@@ -96,187 +181,103 @@ export default function ReceiptModal({ show, data, onClose }) {
           <div className="modal-body ht-receiptBody">
             {showPrintSettings ? (
               <div className="ht-receiptSettingsPanel">
-                <div className="ht-receiptSettingsHeader">
-                  <div className="ht-receiptSettingsTitle">Printer settings</div>
-                  <div className="ht-receiptSettingsNote">
-                    Your printer must already be installed in Windows. Select it in the browser print dialog after
-                    clicking <span className="ht-kbd">Open Print Dialog</span>.
+                <div className="ht-receiptSettingsControls">
+                  <div className="ht-receiptSettingsHeader">
+                    <div className="ht-receiptSettingsTitle">Printer settings</div>
+                    <div className="ht-receiptSettingsNote">
+                      Your printer must already be installed in Windows. Select it in the browser print dialog after
+                      clicking <span className="ht-kbd">Open Print Dialog</span>.
+                    </div>
+                  </div>
+
+                  <div className="ht-receiptSettingsGrid">
+                    <label className="form-label fw-semibold mb-1">Printer name</label>
+                    <input
+                      className="form-control"
+                      placeholder="e.g. Epson TM-T82X"
+                      value={printSettings.printerName}
+                      onChange={(e) => setPrintSettings((current) => ({ ...current, printerName: e.target.value }))}
+                    />
+
+                    <div className="row g-3 mt-1">
+                      <div className="col-md-6">
+                        <label className="form-label fw-semibold mb-1">Paper size</label>
+                        <select
+                          className="form-select"
+                          value={printSettings.paperSize}
+                          onChange={(e) =>
+                            setPrintSettings((current) => ({ ...current, paperSize: e.target.value }))
+                          }
+                        >
+                          <option value="58mm">58mm thermal</option>
+                          <option value="80mm">80mm thermal</option>
+                          <option value="A4">A4 / office printer</option>
+                        </select>
+                      </div>
+
+                      <div className="col-md-6">
+                        <label className="form-label fw-semibold mb-1">Density</label>
+                        <select
+                          className="form-select"
+                          value={printSettings.density}
+                          onChange={(e) =>
+                            setPrintSettings((current) => ({ ...current, density: e.target.value }))
+                          }
+                        >
+                          <option value="compact">Compact</option>
+                          <option value="standard">Standard</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="ht-receiptToggleList">
+                      <label className="form-check">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          checked={printSettings.showCashier}
+                          onChange={(e) =>
+                            setPrintSettings((current) => ({ ...current, showCashier: e.target.checked }))
+                          }
+                        />
+                        <span className="form-check-label">Show cashier name on receipt</span>
+                      </label>
+                      <label className="form-check">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          checked={printSettings.showFooterNote}
+                          onChange={(e) =>
+                            setPrintSettings((current) => ({ ...current, showFooterNote: e.target.checked }))
+                          }
+                        />
+                        <span className="form-check-label">Show thank-you footer</span>
+                      </label>
+                    </div>
                   </div>
                 </div>
 
-                <div className="ht-receiptSettingsGrid">
-                  <label className="form-label fw-semibold mb-1">Printer name</label>
-                  <input
-                    className="form-control"
-                    placeholder="e.g. Epson TM-T82X"
-                    value={printSettings.printerName}
-                    onChange={(e) => setPrintSettings((current) => ({ ...current, printerName: e.target.value }))}
+                <div className="ht-receiptPreviewWrap">
+                  <div className="ht-receiptPreviewLabel">Preview</div>
+                  <ReceiptTicket
+                    sale={sale}
+                    items={items}
+                    receiptNumber={receiptNumber}
+                    receiptDate={receiptDate}
+                    printSettings={printSettings}
+                    widthClass={receiptWidth}
                   />
-
-                  <div className="row g-3 mt-1">
-                    <div className="col-md-6">
-                      <label className="form-label fw-semibold mb-1">Paper size</label>
-                      <select
-                        className="form-select"
-                        value={printSettings.paperSize}
-                        onChange={(e) =>
-                          setPrintSettings((current) => ({ ...current, paperSize: e.target.value }))
-                        }
-                      >
-                        <option value="58mm">58mm thermal</option>
-                        <option value="80mm">80mm thermal</option>
-                        <option value="A4">A4 / office printer</option>
-                      </select>
-                    </div>
-
-                    <div className="col-md-6">
-                      <label className="form-label fw-semibold mb-1">Density</label>
-                      <select
-                        className="form-select"
-                        value={printSettings.density}
-                        onChange={(e) =>
-                          setPrintSettings((current) => ({ ...current, density: e.target.value }))
-                        }
-                      >
-                        <option value="compact">Compact</option>
-                        <option value="standard">Standard</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="ht-receiptToggleList">
-                    <label className="form-check">
-                      <input
-                        className="form-check-input"
-                        type="checkbox"
-                        checked={printSettings.showCashier}
-                        onChange={(e) =>
-                          setPrintSettings((current) => ({ ...current, showCashier: e.target.checked }))
-                        }
-                      />
-                      <span className="form-check-label">Show cashier name on receipt</span>
-                    </label>
-                    <label className="form-check">
-                      <input
-                        className="form-check-input"
-                        type="checkbox"
-                        checked={printSettings.showFooterNote}
-                        onChange={(e) =>
-                          setPrintSettings((current) => ({ ...current, showFooterNote: e.target.checked }))
-                        }
-                      />
-                      <span className="form-check-label">Show thank-you footer</span>
-                    </label>
-                  </div>
-
-                  <div className="ht-receiptPreviewWrap">
-                    <div className="ht-receiptPreviewLabel">Preview</div>
-                    <div className="ht-receiptSheet" style={{ width: receiptWidth }}>
-                      <div className="text-center">
-                        <div className="ht-receiptBrand">MVS Hardware</div>
-                        <div className="ht-receiptShop">HARDTRAC POS Receipt</div>
-                        <div className="ht-receiptMuted">Cashier sales slip</div>
-                      </div>
-
-                      <div className="ht-receiptDivider" />
-
-                      <div className="ht-receiptMeta">
-                        <div className="ht-receiptMetaRow">
-                          <span>Receipt No.</span>
-                          <span>#{receiptNumber}</span>
-                        </div>
-                        <div className="ht-receiptMetaRow">
-                          <span>Date &amp; Time</span>
-                          <span>{receiptDate}</span>
-                        </div>
-                        {printSettings.showCashier && (
-                          <div className="ht-receiptMetaRow">
-                            <span>Cashier</span>
-                            <span>{sale.cashier_name || sale.cashier_username}</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
                 </div>
               </div>
             ) : (
-              <div className="ht-receiptSheet" style={{ width: receiptWidth }}>
-              <div className="text-center">
-                <div className="ht-receiptBrand">MVS Hardware</div>
-                <div className="ht-receiptShop">HARDTRAC POS Receipt</div>
-                <div className="ht-receiptMuted">Cashier sales slip</div>
-              </div>
-
-              <div className="ht-receiptDivider" />
-
-              <div className="ht-receiptMeta">
-                <div className="ht-receiptMetaRow">
-                  <span>Receipt No.</span>
-                  <span>#{receiptNumber}</span>
-                </div>
-                <div className="ht-receiptMetaRow">
-                  <span>Date &amp; Time</span>
-                  <span>{receiptDate}</span>
-                </div>
-                <div className="ht-receiptMetaRow">
-                  <span>Cashier</span>
-                  <span>{sale.cashier_name || sale.cashier_username}</span>
-                </div>
-              </div>
-
-              <div className="ht-receiptDivider" />
-
-              <div className="ht-receiptItems">
-                {items.map((it) => (
-                  <div className="ht-receiptItem" key={it.id}>
-                    <div className="ht-receiptItemTop">
-                      <span className="ht-receiptItemName">{it.product_name}</span>
-                      <span className="ht-receiptItemTotal">{money(it.line_total)}</span>
-                    </div>
-                    <div className="ht-receiptItemMeta">
-                      <span>{it.qty} x {money(it.unit_price)}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="ht-receiptDivider" />
-
-              <div className="ht-receiptTotals">
-                <div className="ht-receiptTotalRow">
-                  <span>Subtotal</span>
-                  <span>{money(sale.subtotal)}</span>
-                </div>
-                <div className="ht-receiptTotalRow">
-                  <span>Discount</span>
-                  <span>- {money(sale.discount_amount)}</span>
-                </div>
-                <div className="ht-receiptTotalRow ht-receiptGrandTotal">
-                  <span>Total</span>
-                  <span>{money(sale.total_amount)}</span>
-                </div>
-                <div className="ht-receiptTotalRow">
-                  <span>Cash</span>
-                  <span>{money(sale.cash_received)}</span>
-                </div>
-                <div className="ht-receiptTotalRow">
-                  <span>Change</span>
-                  <span>{money(sale.change_amount)}</span>
-                </div>
-              </div>
-
-              <div className="ht-receiptDivider" />
-
-              <div className="ht-receiptFooter">
-                {printSettings.showFooterNote && (
-                  <>
-                    <div>Thank you for shopping with us.</div>
-                    <div>Please keep this receipt for warranty or returns.</div>
-                  </>
-                )}
-              </div>
-            </div>
+              <ReceiptTicket
+                sale={sale}
+                items={items}
+                receiptNumber={receiptNumber}
+                receiptDate={receiptDate}
+                printSettings={printSettings}
+                widthClass={receiptWidth}
+              />
             )}
           </div>
           <div className="modal-footer ht-receiptActions">
