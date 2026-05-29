@@ -7,9 +7,10 @@ export default function AppLayout() {
   const [collapsed, setCollapsed] = useState(() => localStorage.getItem("hardtrac_sidebar") === "collapsed");
   const [mobileOpen, setMobileOpen] = useState(false);
   const [posIntroOpen, setPosIntroOpen] = useState(false);
-  const [posMouseUnlocked, setPosMouseUnlocked] = useState(false);
+  const [posCursorMode, setPosCursorMode] = useState("ACTIVE");
   const location = useLocation();
   const isPosRoute = location.pathname === "/pos";
+  const isPosInactive = posCursorMode === "INACTIVE";
 
   useEffect(() => {
     localStorage.setItem("hardtrac_sidebar", collapsed ? "collapsed" : "expanded");
@@ -18,11 +19,11 @@ export default function AppLayout() {
   useEffect(() => {
     if (!isPosRoute) {
       setPosIntroOpen(false);
-      setPosMouseUnlocked(false);
+      setPosCursorMode("ACTIVE");
       return;
     }
     setPosIntroOpen(true);
-    setPosMouseUnlocked(false);
+    setPosCursorMode("ACTIVE");
   }, [isPosRoute]);
 
   useEffect(() => {
@@ -31,11 +32,20 @@ export default function AppLayout() {
 
   useEffect(() => {
     function onKeyDown(e) {
-      if (e.key === "Escape") setMobileOpen(false);
+      const isEscapeKey = e.key === "Escape" || e.key === "Esc" || e.code === "Escape";
+
+      if (isPosRoute && isEscapeKey) {
+        e.preventDefault();
+        e.stopPropagation();
+        setPosCursorMode((current) => (current === "ACTIVE" ? "INACTIVE" : "ACTIVE"));
+        return;
+      }
+
+      if (isEscapeKey) setMobileOpen(false);
     }
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, []);
+    document.addEventListener("keydown", onKeyDown, true);
+    return () => document.removeEventListener("keydown", onKeyDown, true);
+  }, [isPosRoute]);
 
   useEffect(() => {
     function onResize() {
@@ -55,25 +65,28 @@ export default function AppLayout() {
   }, [mobileOpen]);
 
   useEffect(() => {
-    const isLocked = isPosRoute && !posMouseUnlocked;
+    const isLocked = isPosRoute && !isPosInactive;
     document.body.classList.toggle("ht-posMouseLocked", isLocked);
+    document.documentElement.classList.toggle("ht-posMouseLocked", isLocked);
     return () => {
       document.body.classList.remove("ht-posMouseLocked");
+      document.documentElement.classList.remove("ht-posMouseLocked");
     };
-  }, [isPosRoute, posMouseUnlocked]);
+  }, [isPosRoute, isPosInactive]);
 
   const outletContext = {
     isPosRoute,
     posIntroOpen,
-    posMouseUnlocked,
+    posCursorMode,
+    isPosInactive,
     setPosIntroOpen,
-    setPosMouseUnlocked
+    setPosCursorMode
   };
 
   return (
     <div
       className={`d-flex ht-app ${collapsed ? "ht-sidebarCollapsed" : ""} ${mobileOpen ? "ht-mobileOpen" : ""} ${
-        isPosRoute && posMouseUnlocked && !posIntroOpen ? "ht-posSidebarOnly" : ""
+        isPosRoute && isPosInactive && !posIntroOpen ? "ht-posSidebarOnly" : ""
       }`}
     >
       {mobileOpen && <div className="ht-mobileOverlay" onClick={() => setMobileOpen(false)} aria-hidden="true" />}
@@ -95,7 +108,7 @@ export default function AppLayout() {
                 className="btn btn-primary ht-btn ht-btnAccent w-100"
                 autoFocus
                 onClick={() => {
-                  setPosMouseUnlocked(false);
+                  setPosCursorMode("ACTIVE");
                   setPosIntroOpen(false);
                 }}
               >

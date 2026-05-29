@@ -17,9 +17,17 @@ body {
   overflow-x: hidden;
 }
 
+html.ht-posMouseLocked,
 body.ht-posMouseLocked,
+html.ht-posMouseLocked *,
 body.ht-posMouseLocked * {
-  cursor: none;
+  cursor: none !important;
+}
+
+html.ht-posMouseLocked,
+body.ht-posMouseLocked {
+  pointer-events: none !important;
+  user-select: none !important;
 }
 
 .ht-posSidebarOnly,

@@ -14,8 +14,8 @@ import { money } from "../../utils/format.js";
 export default function POSPage() {
   const kioskContext = useOutletContext() ?? {};
   const posIntroOpen = kioskContext.posIntroOpen ?? false;
-  const posMouseUnlocked = kioskContext.posMouseUnlocked ?? false;
-  const setPosMouseUnlocked = kioskContext.setPosMouseUnlocked ?? (() => {});
+  const isPosInactive = kioskContext.isPosInactive ?? false;
+  const posStatusLabel = isPosInactive ? "INACTIVE" : "ACTIVE";
 
   const scanRef = useRef(null);
   const scanSubmitTimerRef = useRef(null);
@@ -44,26 +44,14 @@ export default function POSPage() {
   }, []);
 
   useEffect(() => {
-    if (!posIntroOpen && !posMouseUnlocked) {
+    if (!posIntroOpen && !isPosInactive) {
       scanRef.current?.focus();
     }
-  }, [posIntroOpen, posMouseUnlocked]);
+  }, [posIntroOpen, isPosInactive]);
 
   useEffect(() => {
     function onKeyDown(e) {
-      if (e.key === "Escape") {
-        e.preventDefault();
-        const nextUnlocked = !posMouseUnlocked;
-        setPosMouseUnlocked(nextUnlocked);
-        setToast({
-          show: true,
-          message: nextUnlocked ? "Sidebar mode enabled. POS is on hold." : "Keyboard-only POS mode restored.",
-          variant: "info"
-        });
-        return;
-      }
-
-      if (posMouseUnlocked) {
+      if (isPosInactive) {
         return;
       }
 
@@ -96,14 +84,14 @@ export default function POSPage() {
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [posMouseUnlocked, setPosMouseUnlocked]);
+  }, [isPosInactive]);
 
   const subtotal = useMemo(() => cart.reduce((s, it) => s + it.unitPrice * it.qty, 0), [cart]);
   const total = useMemo(() => Math.max(0, subtotal - Number(discountAmount || 0)), [subtotal, discountAmount]);
   const change = useMemo(() => Math.max(0, Number(cashReceived || 0) - total), [cashReceived, total]);
 
   async function findAndAdd(code) {
-    if (posMouseUnlocked) return;
+    if (isPosInactive) return;
     const value = code.trim();
     if (!value) return;
     if (scanSubmitTimerRef.current) {
@@ -151,7 +139,7 @@ export default function POSPage() {
   }
 
   function queueScanSubmit(nextValue) {
-    if (posMouseUnlocked) return;
+    if (isPosInactive) return;
     if (scanSubmitTimerRef.current) {
       window.clearTimeout(scanSubmitTimerRef.current);
     }
@@ -177,7 +165,7 @@ export default function POSPage() {
   }
 
   async function completeSale() {
-    if (posMouseUnlocked) return;
+    if (isPosInactive) return;
     if (!cart.length) return setToast({ show: true, message: "Cart is empty", variant: "warning" });
     if (Number(cashReceived || 0) < total) return setToast({ show: true, message: "Insufficient cash", variant: "warning" });
 
@@ -203,16 +191,16 @@ export default function POSPage() {
 
   return (
     <>
-      {posMouseUnlocked && (
+      {isPosInactive && (
         <div className="alert alert-warning ht-posPausedBanner mb-3" role="status" aria-live="polite">
           <div className="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between gap-2">
             <div>
-              <div className="fw-bold">POS is on hold</div>
+              <div className="fw-bold">POS STATUS: INACTIVE</div>
               <div className="small">
-                The mouse is active for sidebar navigation only. Press <span className="ht-kbd">Esc</span> again to return to cashier mode.
+                The mouse is active for sidebar navigation only. Keyboard actions are paused except <span className="ht-kbd">Esc</span>, which returns the POS to active mode.
               </div>
             </div>
-            <span className="badge text-bg-warning">Hold mode</span>
+            <span className="badge text-bg-danger">INACTIVE</span>
           </div>
         </div>
       )}
@@ -222,8 +210,8 @@ export default function POSPage() {
           <h4 className="mb-0 ht-title">POS</h4>
           <div className="d-flex flex-wrap align-items-center gap-2 mt-1">
             <div className="ht-muted small">Scan barcode/RFID or type product code</div>
-            <span className={`badge ${posMouseUnlocked ? "text-bg-warning" : "text-bg-dark"}`}>
-              {posMouseUnlocked ? "POS on hold" : "POS active"}
+            <span className={`badge ${isPosInactive ? "text-bg-danger" : "text-bg-success"}`}>
+              POS STATUS: {posStatusLabel}
             </span>
           </div>
         </div>
@@ -242,7 +230,7 @@ export default function POSPage() {
             <div>
               <div className="fw-semibold">Keyboard shortcut hints</div>
               <div className="text-muted small">
-                Press <span className="ht-kbd">Esc</span> to place the POS on hold and use the sidebar. Press <span className="ht-kbd">Esc</span> again to return to cashier mode.
+                Press <span className="ht-kbd">Esc</span> to switch the POS to inactive mode and use the sidebar. Press <span className="ht-kbd">Esc</span> again to return to active cashier mode.
               </div>
             </div>
             <div className="d-flex flex-wrap gap-2">
@@ -268,7 +256,7 @@ export default function POSPage() {
                 className="form-control form-control-lg ht-scanGlow"
                 placeholder="Scan barcode or RFID then press Enter..."
                 value={scanCode}
-                disabled={posMouseUnlocked}
+                disabled={isPosInactive}
                 onChange={(e) => {
                   const nextValue = e.target.value;
                   setScanCode(nextValue);
@@ -314,7 +302,7 @@ export default function POSPage() {
                           <div className="btn-group ht-cartQtyGroup" role="group">
                             <button
                               className="btn btn-outline-secondary btn-sm ht-btn ht-btnGhost"
-                              disabled={posMouseUnlocked}
+                              disabled={isPosInactive}
                               onClick={() => setQty(it.productId, Math.max(1, it.qty - 1))}
                             >
                               -
@@ -322,7 +310,7 @@ export default function POSPage() {
                             <input
                               className="form-control form-control-sm text-center ht-fieldTiny"
                               value={it.qty}
-                              disabled={posMouseUnlocked}
+                              disabled={isPosInactive}
                               onChange={(e) => {
                                 const next = Number(e.target.value || 1);
                                 if (!Number.isFinite(next)) return;
@@ -331,7 +319,7 @@ export default function POSPage() {
                             />
                             <button
                               className="btn btn-outline-secondary btn-sm ht-btn ht-btnGhost"
-                              disabled={posMouseUnlocked || it.qty >= it.stock}
+                              disabled={isPosInactive || it.qty >= it.stock}
                               onClick={() => setQty(it.productId, Math.min(it.stock, it.qty + 1))}
                             >
                               +
@@ -342,7 +330,7 @@ export default function POSPage() {
                         <td className="text-end">
                           <button
                             className="btn btn-sm btn-outline-danger ht-btn"
-                            disabled={posMouseUnlocked}
+                            disabled={isPosInactive}
                             onClick={() => setQty(it.productId, 0)}
                           >
                             Remove
@@ -385,7 +373,7 @@ export default function POSPage() {
                   min="0"
                   step="0.01"
                   value={discountAmount}
-                  disabled={posMouseUnlocked}
+                  disabled={isPosInactive}
                   aria-keyshortcuts="F2"
                   onChange={(e) => setDiscountAmount(e.target.value)}
                 />
@@ -407,7 +395,7 @@ export default function POSPage() {
                   min="0"
                   step="0.01"
                   value={cashReceived}
-                  disabled={posMouseUnlocked}
+                  disabled={isPosInactive}
                   aria-keyshortcuts="F3"
                   onChange={(e) => setCashReceived(e.target.value)}
                 />
@@ -420,7 +408,7 @@ export default function POSPage() {
               <button
                 ref={completeRef}
                 className="btn btn-primary w-100 mt-3 ht-btn ht-btnAccent"
-                disabled={submitting || posMouseUnlocked}
+                disabled={submitting || isPosInactive}
                 onClick={completeSale}
                 aria-keyshortcuts="F4"
               >
@@ -432,9 +420,9 @@ export default function POSPage() {
         </div>
       </div>
 
-      {posMouseUnlocked && (
+      {isPosInactive && (
         <div className="alert alert-warning mt-3">
-          POS is on hold. Use the sidebar while the mouse is active, or press <span className="ht-kbd">Esc</span> again to return to cashier mode.
+          POS is inactive. Use the sidebar while the mouse is active, or press <span className="ht-kbd">Esc</span> again to return to active cashier mode.
         </div>
       )}
 
