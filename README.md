@@ -91,6 +91,19 @@ http://localhost:5173
 
 Vite is configured to proxy `/api/*` requests to `http://localhost:4000`, so the frontend can call the backend using `/api` without CORS issues.
 
+## Vercel Deployment
+
+This repo includes Vercel config in `vercel.json` and `frontend/vercel.json`.
+
+Deploying the frontend from the repo root:
+
+1. In Vercel, link the GitHub repo `Chuckieeeph/HARDTRAC-REACT-SYSTEM`.
+2. Let Vercel use the root `vercel.json` config.
+3. Set `VITE_API_URL` in the Vercel environment to your deployed backend API URL, for example `https://your-backend.example.com/api`.
+4. Redeploy after the environment variable is saved.
+
+The frontend uses `VITE_API_URL` when available and falls back to `/api` for local development.
+
 ## Default Demo Accounts
 
 Created by `npm run seed` (backend):
