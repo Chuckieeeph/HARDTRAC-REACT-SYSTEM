@@ -48,7 +48,8 @@ router.post(
   requireRole("admin", "head-cashier"),
   validate({
     body: z.object({
-      reason: z.string().min(1).max(255).optional()
+      reason: z.string().min(1).max(255).optional(),
+      approvalRfid: z.string().trim().min(1).max(80)
     })
   }),
   voidExistingSale

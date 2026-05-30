@@ -52,7 +52,7 @@ export default function App() {
             <Route path="/admin/audit-logs" element={<AuditLogsPage />} />
           </Route>
 
-          <Route element={<RoleBasedRoute allow={["admin", "head-cashier"]} />}>
+          <Route element={<RoleBasedRoute allow={["admin", "head-cashier", "cashier"]} />}>
             <Route path="/admin/inventory" element={<InventoryPage />} />
             <Route path="/admin/reports/low-stock" element={<LowStockReportPage />} />
           </Route>

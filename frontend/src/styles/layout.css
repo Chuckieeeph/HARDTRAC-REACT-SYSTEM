@@ -97,10 +97,24 @@
 .ht-content {
   flex: 1;
   min-width: 0;
+  position: relative;
+}
+
+.ht-posHoldMode .ht-topbar,
+.ht-posHoldMode .ht-main {
+  pointer-events: none;
+  user-select: none;
+  filter: blur(6px);
+}
+
+.ht-posHoldMode .ht-posLockOverlay {
+  pointer-events: auto;
+  position: absolute;
+  inset: 0;
 }
 
 .ht-posLockOverlay {
-  position: fixed;
+  position: absolute;
   inset: 0;
   z-index: 3000;
   display: flex;
@@ -114,6 +128,13 @@
   pointer-events: auto;
   touch-action: none;
   cursor: not-allowed;
+}
+
+.ht-posOverlayToast {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
 }
 
 .ht-posLockCard {

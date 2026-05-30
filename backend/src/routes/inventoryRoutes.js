@@ -8,12 +8,12 @@ import { adjustStock, getLowStock, getMovements, getOutOfStock } from "../contro
 const router = Router();
 router.use(requireAuth);
 
-router.get("/low-stock", requireRole("admin", "head-cashier"), getLowStock);
-router.get("/out-of-stock", requireRole("admin", "head-cashier"), getOutOfStock);
+router.get("/low-stock", requireRole("admin", "head-cashier", "cashier"), getLowStock);
+router.get("/out-of-stock", requireRole("admin", "head-cashier", "cashier"), getOutOfStock);
 
 router.get(
   "/movements",
-  requireRole("admin", "head-cashier"),
+  requireRole("admin", "head-cashier", "cashier"),
   validate({
     query: z.object({
       from: z.string().optional(),

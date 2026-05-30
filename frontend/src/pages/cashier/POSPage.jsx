@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { api } from "../../services/api.js";
 import Toast from "../../shared/Toast.jsx";
@@ -75,8 +75,10 @@ function clearPosDraft() {
 export default function POSPage() {
   const kioskContext = useOutletContext() ?? {};
   const posIntroOpen = kioskContext.posIntroOpen ?? false;
-  const isPosInactive = kioskContext.isPosInactive ?? false;
-  const posStatusLabel = isPosInactive ? "INACTIVE" : "ACTIVE";
+  const isPosOnHold = kioskContext.isPosOnHold ?? false;
+  const setPosIntroOpen = kioskContext.setPosIntroOpen ?? (() => {});
+  const setPosCursorMode = kioskContext.setPosCursorMode ?? (() => {});
+  const setIsReceiptOpen = kioskContext.setIsReceiptOpen ?? (() => {});
 
   const scanRef = useRef(null);
   const discountRef = useRef(null);
@@ -96,16 +98,22 @@ export default function POSPage() {
   const [toast, setToast] = useState({ show: false, message: "", variant: "success" });
   const [receipt, setReceipt] = useState(null);
   const [lastAddedId, setLastAddedId] = useState(null);
+  const scanSubmitLockRef = useRef(false);
 
   useEffect(() => {
     scanRef.current?.focus();
   }, []);
 
   useEffect(() => {
-    if (!posIntroOpen && !isPosInactive) {
+    setIsReceiptOpen(Boolean(receipt));
+    return () => setIsReceiptOpen(false);
+  }, [receipt, setIsReceiptOpen]);
+
+  useEffect(() => {
+    if (!posIntroOpen && !isPosOnHold) {
       scanRef.current?.focus();
     }
-  }, [posIntroOpen, isPosInactive]);
+  }, [posIntroOpen, isPosOnHold]);
 
   useEffect(() => {
     const nextDraft = {
@@ -133,7 +141,7 @@ export default function POSPage() {
 
   useEffect(() => {
     function onKeyDown(e) {
-      if (isPosInactive) {
+      if (isPosOnHold) {
         return;
       }
 
@@ -166,14 +174,14 @@ export default function POSPage() {
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [isPosInactive]);
+  }, [isPosOnHold]);
 
   const subtotal = useMemo(() => cart.reduce((s, it) => s + it.unitPrice * it.qty, 0), [cart]);
   const total = useMemo(() => Math.max(0, subtotal - Number(discountAmount || 0)), [subtotal, discountAmount]);
   const change = useMemo(() => Math.max(0, Number(cashReceived || 0) - total), [cashReceived, total]);
 
-  async function findAndAdd(code) {
-    if (isPosInactive) return;
+  const findAndAdd = useCallback(async (code) => {
+    if (isPosOnHold) return;
     const value = code.trim();
     if (!value) return;
     try {
@@ -214,7 +222,31 @@ export default function POSPage() {
       setScanCode("");
       scanRef.current?.focus();
     }
-  }
+  }, [isPosOnHold]);
+
+  const handleScanEnter = useCallback(async (value) => {
+    if (scanSubmitLockRef.current) return;
+    scanSubmitLockRef.current = true;
+    try {
+      await findAndAdd(value);
+    } finally {
+      window.setTimeout(() => {
+        scanSubmitLockRef.current = false;
+      }, 0);
+    }
+  }, [findAndAdd]);
+
+  const handleScanKeyEvent = useCallback(
+    (e) => {
+      const isEnterKey = e.key === "Enter" || e.code === "Enter" || e.code === "NumpadEnter";
+      if (!isEnterKey) return;
+
+      e.preventDefault();
+      e.stopPropagation();
+      handleScanEnter(e.currentTarget.value);
+    },
+    [handleScanEnter]
+  );
 
   function setQty(productId, qty) {
     setCart((prev) =>
@@ -225,7 +257,7 @@ export default function POSPage() {
   }
 
   async function completeSale() {
-    if (isPosInactive) return;
+    if (isPosOnHold) return;
     if (!cart.length) return setToast({ show: true, message: "Cart is empty", variant: "warning" });
     if (Number(cashReceived || 0) < total) return setToast({ show: true, message: "Insufficient cash", variant: "warning" });
 
@@ -252,37 +284,42 @@ export default function POSPage() {
 
   return (
     <>
-      {isPosInactive && (
-        <div className="alert alert-warning ht-posPausedBanner mb-3" role="status" aria-live="polite">
-          <div className="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between gap-2">
-            <div>
-              <div className="fw-bold">POS STATUS: INACTIVE</div>
-              <div className="small">
-                The mouse is active for sidebar navigation only. Keyboard actions are paused except <span className="ht-kbd">Esc</span>, which returns the POS to active mode.
-              </div>
-            </div>
-            <span className="badge text-bg-danger">INACTIVE</span>
-          </div>
+      {isPosOnHold && (
+        <div className="ht-posLockCard mb-3" role="status" aria-live="polite">
+          <div className="ht-posLockEyebrow">POS STATUS</div>
+          <h2 className="h4 mb-2">ON-HOLD</h2>
+          <p className="text-muted mb-0">
+            The POS is on hold, please click the <span className="ht-kbd">Esc</span> button to activate it.
+          </p>
         </div>
       )}
 
       <div className="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between gap-2 mb-3">
         <div>
           <h4 className="mb-0 ht-title">POS</h4>
-          <div className="d-flex flex-wrap align-items-center gap-2 mt-1">
-            <div className="ht-muted small">Scan barcode/RFID or type product code</div>
-            <span className={`badge ${isPosInactive ? "text-bg-danger" : "text-bg-success"}`}>
-              POS STATUS: {posStatusLabel}
-            </span>
-          </div>
+          <div className="ht-muted small mt-1">Scan barcode/RFID or type product code</div>
         </div>
-        <button
-          className="btn btn-outline-secondary ht-btn ht-btnGhost"
-          onClick={() => scanRef.current?.focus()}
-          aria-keyshortcuts="F1"
-        >
-          Focus Scan <span className="ms-2 ht-kbd">F1</span>
-        </button>
+        <div className="d-flex flex-wrap gap-2">
+          <button
+            className="btn btn-outline-secondary ht-btn ht-btnGhost"
+            onClick={() => scanRef.current?.focus()}
+            disabled={isPosOnHold}
+            aria-keyshortcuts="F1"
+          >
+            {isPosOnHold ? "POS On Hold" : <>Focus Scan <span className="ms-2 ht-kbd">F1</span></>}
+          </button>
+          {!isPosOnHold && (
+            <button
+              className="btn btn-outline-danger ht-btn ht-btnGhost"
+              onClick={() => {
+                setPosIntroOpen(false);
+                setPosCursorMode("ON_HOLD");
+              }}
+            >
+              Shift + Esc
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="card ht-cardHover mb-3 ht-shortcutPanel">
@@ -291,14 +328,20 @@ export default function POSPage() {
             <div>
               <div className="fw-semibold">Keyboard shortcut hints</div>
               <div className="text-muted small">
-                Press <span className="ht-kbd">Esc</span> to switch the POS to inactive mode and use the sidebar. Press <span className="ht-kbd">Esc</span> again to return to active cashier mode.
+                Press <span className="ht-kbd">Shift + Esc</span> to put the POS on hold and use the sidebar. While on hold, only <span className="ht-kbd">Esc</span> is active.
               </div>
             </div>
             <div className="d-flex flex-wrap gap-2">
-              <span className="ht-pill"><span className="ht-kbd">Enter</span> Add scanned item</span>
-              <span className="ht-pill"><span className="ht-kbd">F2</span> Discount</span>
-              <span className="ht-pill"><span className="ht-kbd">F3</span> Cash</span>
-              <span className="ht-pill"><span className="ht-kbd">F4</span> Complete sale</span>
+              {isPosOnHold ? (
+                <span className="ht-pill"><span className="ht-kbd">Esc</span> Return to active mode</span>
+              ) : (
+                <>
+                  <span className="ht-pill"><span className="ht-kbd">Enter</span> Add scanned item</span>
+                  <span className="ht-pill"><span className="ht-kbd">F2</span> Discount</span>
+                  <span className="ht-pill"><span className="ht-kbd">F3</span> Cash</span>
+                  <span className="ht-pill"><span className="ht-kbd">F4</span> Complete sale</span>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -317,17 +360,15 @@ export default function POSPage() {
                 className="form-control form-control-lg ht-scanGlow"
                 placeholder="Scan barcode or RFID then press Enter..."
                 value={scanCode}
-                disabled={isPosInactive}
+                disabled={isPosOnHold}
+                autoComplete="off"
+                spellCheck={false}
                 onChange={(e) => {
                   setScanCode(e.target.value);
                 }}
                 aria-keyshortcuts="F1 Enter"
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    findAndAdd(e.currentTarget.value);
-                  }
-                }}
+                onKeyDownCapture={handleScanKeyEvent}
+                onKeyUpCapture={handleScanKeyEvent}
               />
               <div className="text-muted small mt-2">
                 Tip: scanners usually act like keyboards and often send <span className="ht-kbd">Enter</span> automatically. If you type the barcode manually, press <span className="ht-kbd">Enter</span> to add the item.
@@ -361,7 +402,7 @@ export default function POSPage() {
                           <div className="btn-group ht-cartQtyGroup" role="group">
                             <button
                               className="btn btn-outline-secondary btn-sm ht-btn ht-btnGhost"
-                              disabled={isPosInactive}
+                              disabled={isPosOnHold}
                               onClick={() => setQty(it.productId, Math.max(1, it.qty - 1))}
                             >
                               -
@@ -369,7 +410,7 @@ export default function POSPage() {
                             <input
                               className="form-control form-control-sm text-center ht-fieldTiny"
                               value={it.qty}
-                              disabled={isPosInactive}
+                              disabled={isPosOnHold}
                               onChange={(e) => {
                                 const next = Number(e.target.value || 1);
                                 if (!Number.isFinite(next)) return;
@@ -378,7 +419,7 @@ export default function POSPage() {
                             />
                             <button
                               className="btn btn-outline-secondary btn-sm ht-btn ht-btnGhost"
-                              disabled={isPosInactive || it.qty >= it.stock}
+                              disabled={isPosOnHold || it.qty >= it.stock}
                               onClick={() => setQty(it.productId, Math.min(it.stock, it.qty + 1))}
                             >
                               +
@@ -389,7 +430,7 @@ export default function POSPage() {
                         <td className="text-end">
                           <button
                             className="btn btn-sm btn-outline-danger ht-btn"
-                            disabled={isPosInactive}
+                            disabled={isPosOnHold}
                             onClick={() => setQty(it.productId, 0)}
                           >
                             Remove
@@ -432,7 +473,7 @@ export default function POSPage() {
                   min="0"
                   step="0.01"
                   value={discountAmount}
-                  disabled={isPosInactive}
+                  disabled={isPosOnHold}
                   aria-keyshortcuts="F2"
                   onChange={(e) => setDiscountAmount(e.target.value)}
                 />
@@ -454,7 +495,7 @@ export default function POSPage() {
                   min="0"
                   step="0.01"
                   value={cashReceived}
-                  disabled={isPosInactive}
+                  disabled={isPosOnHold}
                   aria-keyshortcuts="F3"
                   onChange={(e) => setCashReceived(e.target.value)}
                 />
@@ -467,7 +508,7 @@ export default function POSPage() {
               <button
                 ref={completeRef}
                 className="btn btn-primary w-100 mt-3 ht-btn ht-btnAccent"
-                disabled={submitting || isPosInactive}
+                disabled={submitting || isPosOnHold}
                 onClick={completeSale}
                 aria-keyshortcuts="F4"
               >
@@ -479,13 +520,12 @@ export default function POSPage() {
         </div>
       </div>
 
-      {isPosInactive && (
-        <div className="alert alert-warning mt-3">
-          POS is inactive. Use the sidebar while the mouse is active, or press <span className="ht-kbd">Esc</span> again to return to active cashier mode.
-        </div>
-      )}
-
-      <ReceiptModal show={Boolean(receipt)} data={receipt} onClose={() => setReceipt(null)} />
+      <ReceiptModal
+        show={Boolean(receipt)}
+        data={receipt}
+        onClose={() => setReceipt(null)}
+        onOpenChange={setIsReceiptOpen}
+      />
 
       <Toast show={toast.show} message={toast.message} variant={toast.variant} onClose={() => setToast({ ...toast, show: false })} />
     </>

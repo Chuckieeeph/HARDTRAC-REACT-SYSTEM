@@ -5,7 +5,7 @@ import Toast from "../../shared/Toast.jsx";
 export default function UsersPage() {
   const [users, setUsers] = useState([]);
   const [toast, setToast] = useState({ show: false, message: "", variant: "success" });
-  const [form, setForm] = useState({ username: "", password: "", role: "cashier", fullName: "" });
+  const [form, setForm] = useState({ username: "", password: "", role: "cashier", fullName: "", rfidValue: "" });
 
   function setField(k, v) {
     setForm((f) => ({ ...f, [k]: v }));
@@ -27,9 +27,10 @@ export default function UsersPage() {
         username: form.username.trim(),
         password: form.password,
         role: form.role,
-        fullName: form.fullName.trim()
+        fullName: form.fullName.trim(),
+        rfidValue: form.rfidValue.trim() || null
       });
-      setForm({ username: "", password: "", role: "cashier", fullName: "" });
+      setForm({ username: "", password: "", role: "cashier", fullName: "", rfidValue: "" });
       setToast({ show: true, message: "User created", variant: "success" });
       await load();
     } catch (err) {
@@ -65,7 +66,7 @@ export default function UsersPage() {
       <div className="card ht-cardHover mb-3">
         <div className="card-body">
           <form className="row g-2" onSubmit={addUser}>
-            <div className="col-md-3">
+            <div className="col-md-2">
               <input className="form-control" placeholder="Username" value={form.username} onChange={(e) => setField("username", e.target.value)} required />
             </div>
             <div className="col-md-3">
@@ -79,9 +80,12 @@ export default function UsersPage() {
               </select>
             </div>
             <div className="col-md-2">
+              <input className="form-control" placeholder="RFID tag (optional)" value={form.rfidValue} onChange={(e) => setField("rfidValue", e.target.value)} />
+            </div>
+            <div className="col-md-2">
               <input className="form-control" type="password" placeholder="Password" value={form.password} onChange={(e) => setField("password", e.target.value)} required />
             </div>
-            <div className="col-md-2 d-grid">
+            <div className="col-md-1 d-grid">
               <button className="btn btn-primary ht-btn ht-btnAccent">Create</button>
             </div>
           </form>
@@ -95,6 +99,7 @@ export default function UsersPage() {
               <tr>
                 <th>Username</th>
                 <th>Full Name</th>
+                <th>RFID</th>
                 <th>Role</th>
                 <th>Status</th>
                 <th style={{ width: 160 }} />
@@ -105,6 +110,14 @@ export default function UsersPage() {
                 <tr key={u.id}>
                   <td className="fw-semibold">{u.username}</td>
                   <td>{u.full_name}</td>
+                  <td>
+                    <input
+                      className="form-control form-control-sm"
+                      defaultValue={u.rfid_value || ""}
+                      onBlur={(e) => updateUser(u.id, { rfidValue: e.target.value.trim() || null })}
+                      placeholder="Scan or type RFID"
+                    />
+                  </td>
                   <td>
                     <select className="form-select form-select-sm" value={u.role} onChange={(e) => updateUser(u.id, { role: e.target.value })}>
                       <option value="admin">Admin</option>
@@ -127,7 +140,7 @@ export default function UsersPage() {
               ))}
               {users.length === 0 && (
                 <tr>
-                  <td colSpan="5" className="text-center text-muted py-4">
+                  <td colSpan="6" className="text-center text-muted py-4">
                     No users.
                   </td>
                 </tr>

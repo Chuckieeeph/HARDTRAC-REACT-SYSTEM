@@ -151,12 +151,8 @@ export default function Sidebar({ onNavigate }) {
             <div className="ht-navSection">{isHeadCashier ? "Head Cashier" : "Cashier"}</div>
             <MenuLink to="/pos" label="POS" icon="pos" onNavigate={onNavigate} />
             <MenuLink to="/my-transactions" label="My Transactions" icon="receipt" onNavigate={onNavigate} />
-            {isHeadCashier && (
-              <>
-                <MenuLink to="/admin/inventory" label="Inventory" icon="inventory" onNavigate={onNavigate} />
-                <MenuLink to="/admin/reports/low-stock" label="Low Stock" icon="report" onNavigate={onNavigate} />
-              </>
-            )}
+            <MenuLink to="/admin/inventory" label="Inventory" icon="inventory" onNavigate={onNavigate} />
+            {isHeadCashier && <MenuLink to="/admin/reports/low-stock" label="Low Stock" icon="report" onNavigate={onNavigate} />}
           </>
         )}
       </nav>

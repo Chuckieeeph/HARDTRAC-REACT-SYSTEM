@@ -86,7 +86,8 @@ INSERT INTO `categories` (`id`, `name`, `created_at`, `updated_at`) VALUES
 (2, 'Plumbing', '2026-05-16 01:56:37', '2026-05-16 01:56:37'),
 (3, 'Electrical', '2026-05-16 01:56:37', '2026-05-16 01:56:37'),
 (4, 'Paint', '2026-05-16 01:56:37', '2026-05-16 01:56:37'),
-(5, 'Tools', '2026-05-16 01:56:37', '2026-05-16 01:56:37');
+(5, 'Tools', '2026-05-16 01:56:37', '2026-05-16 01:56:37'),
+(6, 'Building Materials', '2026-05-30 00:00:00', '2026-05-30 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -168,7 +169,11 @@ INSERT INTO `products` (`id`, `name`, `category_id`, `supplier_id`, `sku`, `barc
 (13, 'Common Nails 2\" (1kg)', 1, 2, 'SKU-NAILS-2-1KG', 'BC-000013', 'RFID-000013', 'Common nails 2 inch, 1kg pack', 'pack', 65.00, 95.00, 18, 6, 'active', '2026-05-16 08:08:43', '2026-05-16 08:08:43'),
 (14, 'Wood Screws 1\" (100pcs)', 1, 1, 'SKU-SCREWS-1-100', 'BC-000014', 'RFID-000014', 'Wood screws 1 inch, 100pcs', 'box', 55.00, 85.00, 22, 8, 'active', '2026-05-16 08:08:43', '2026-05-16 08:08:43'),
 (15, 'Flat Latex Paint White (1L)', 4, 2, 'SKU-PAINT-WHITE-1L', 'BC-000015', 'RFID-000015', 'Flat latex paint, white, 1 liter', 'can', 180.00, 245.00, 14, 4, 'active', '2026-05-16 08:08:43', '2026-05-16 08:08:43'),
-(16, 'Paint Brush 2\"', 4, 1, 'SKU-BRUSH-2IN', 'BC-000016', 'RFID-000016', 'Paint brush 2 inch', 'pc', 28.00, 45.00, 0, 10, 'active', '2026-05-16 08:08:43', '2026-05-16 08:31:52');
+(16, 'Paint Brush 2\"', 4, 1, 'SKU-BRUSH-2IN', 'BC-000016', 'RFID-000016', 'Paint brush 2 inch', 'pc', 28.00, 45.00, 0, 10, 'active', '2026-05-16 08:08:43', '2026-05-16 08:31:52'),
+(17, 'Doorknob Set', 6, 2, 'SKU-DOORKNOB-SET', 'BC-000017', 'RFID-000017', 'Stainless steel doorknob set', 'set', 140.00, 195.00, 18, 6, 'active', '2026-05-30 00:00:00', '2026-05-30 00:00:00'),
+(18, 'Iron Sheet 8ft', 6, 1, 'SKU-IRON-SHEET-8FT', 'BC-000018', 'RFID-000018', 'Corrugated iron sheet 8 feet', 'sheet', 320.00, 420.00, 24, 8, 'active', '2026-05-30 00:00:00', '2026-05-30 00:00:00'),
+(19, 'Door Hinge 4in', 6, 2, 'SKU-DOOR-HINGE-4IN', 'BC-000019', 'RFID-000019', 'Heavy-duty door hinge 4 inch', 'pair', 25.00, 40.00, 60, 15, 'active', '2026-05-30 00:00:00', '2026-05-30 00:00:00'),
+(20, 'Aluminum Roof Nail', 6, 1, 'SKU-ROOF-NAIL', 'BC-000020', 'RFID-000020', 'Aluminum roofing nails', 'pack', 18.00, 30.00, 90, 20, 'active', '2026-05-30 00:00:00', '2026-05-30 00:00:00');
 
 -- --------------------------------------------------------
 

@@ -6,7 +6,8 @@ INSERT INTO categories (name) VALUES
 ('Plumbing'),
 ('Electrical'),
 ('Paint'),
-('Tools')
+('Tools'),
+('Building Materials')
 ON DUPLICATE KEY UPDATE name = VALUES(name);
 
 INSERT INTO suppliers (name, contact_person, phone, email, address) VALUES
@@ -23,6 +24,13 @@ VALUES
   ('PVC Pipe 1/2"', (SELECT id FROM categories WHERE name='Plumbing' LIMIT 1), (SELECT id FROM suppliers WHERE name='Hardware Wholesale Co.' LIMIT 1),
    'SKU-PVC-12', 'BC-000002', 'RFID-000002', 'PVC pipe 1/2 inch', 'pc', 35.00, 50.00, 40, 10, 'active'),
   ('LED Bulb 9W', (SELECT id FROM categories WHERE name='Electrical' LIMIT 1), (SELECT id FROM suppliers WHERE name='MVS Main Supplier' LIMIT 1),
-   'SKU-LED-9W', 'BC-000003', 'RFID-000003', 'Energy-saving LED bulb', 'pc', 60.00, 95.00, 8, 10, 'active')
+   'SKU-LED-9W', 'BC-000003', 'RFID-000003', 'Energy-saving LED bulb', 'pc', 60.00, 95.00, 8, 10, 'active'),
+  ('Doorknob Set', (SELECT id FROM categories WHERE name='Building Materials' LIMIT 1), (SELECT id FROM suppliers WHERE name='Hardware Wholesale Co.' LIMIT 1),
+   'SKU-DOORKNOB-SET', 'BC-000017', 'RFID-000017', 'Stainless steel doorknob set', 'set', 140.00, 195.00, 18, 6, 'active'),
+  ('Iron Sheet 8ft', (SELECT id FROM categories WHERE name='Building Materials' LIMIT 1), (SELECT id FROM suppliers WHERE name='MVS Main Supplier' LIMIT 1),
+   'SKU-IRON-SHEET-8FT', 'BC-000018', 'RFID-000018', 'Corrugated iron sheet 8 feet', 'sheet', 320.00, 420.00, 24, 8, 'active'),
+  ('Door Hinge 4in', (SELECT id FROM categories WHERE name='Building Materials' LIMIT 1), (SELECT id FROM suppliers WHERE name='Hardware Wholesale Co.' LIMIT 1),
+   'SKU-DOOR-HINGE-4IN', 'BC-000019', 'RFID-000019', 'Heavy-duty door hinge 4 inch', 'pair', 25.00, 40.00, 60, 15, 'active'),
+  ('Aluminum Roof Nail', (SELECT id FROM categories WHERE name='Building Materials' LIMIT 1), (SELECT id FROM suppliers WHERE name='MVS Main Supplier' LIMIT 1),
+   'SKU-ROOF-NAIL', 'BC-000020', 'RFID-000020', 'Aluminum roofing nails', 'pack', 18.00, 30.00, 90, 20, 'active')
 ON DUPLICATE KEY UPDATE name = VALUES(name);
-

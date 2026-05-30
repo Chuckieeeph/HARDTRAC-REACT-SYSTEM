@@ -39,7 +39,7 @@ copy .env.example .env
 npm run seed
 ```
 
-If your database already exists, re-running `npm run seed` will recreate the tables with the updated roles and void columns.
+If your database already exists, re-running `npm run seed` will recreate the tables with the updated roles, RFID fields, and void columns.
 
 ## Restore Backup Database
 
@@ -50,7 +50,7 @@ cd backend
 npm run restore-backup
 ```
 
-This restores `database/hardtrac_db_backup.sql`, drops the current tables first, then reapplies the newer app columns and the `headcashier / HeadCashier123!` demo account.
+This restores `database/hardtrac_db_backup.sql`, drops the current tables first, then reapplies the newer app columns and the demo accounts.
 
 > Note: `backend/.env.example` uses Laragon defaults: MySQL user `root` with empty password.
 
@@ -105,6 +105,13 @@ Created by `npm run seed` (backend):
   - Username: `headcashier`
   - Password: `HeadCashier123!`
 
+Demo RFID values:
+
+- Admin: `0805615836`
+- Cashier: `0807110236`
+- Cashier 2: `0805666812`
+- Head Cashier: `0807793948`
+
 If you changed these users before, re-run `npm run seed` to reset the demo passwords and recreate the head-cashier account.
 
 ## Barcode + RFID Scanner Usage (Important)
@@ -119,6 +126,8 @@ Practical local web approach:
   - The code is searched in the database and the matching product is added to cart
 - No hardware required: you can manually type the code and press **Enter**.
 - After clicking **Enter POS**, the cashier can use the sidebar to check inventory and low-stock screens.
+- On the login page, you can switch between username/password and RFID scan mode.
+- On the transactions page, voiding a sale now requires scanning the approving admin or head-cashier RFID.
 
 Matching fields used by the POS scan:
 
@@ -137,6 +146,7 @@ Matching fields used by the POS scan:
 
 - Unique validation is enforced by MySQL constraints for:
   - `users.username`
+  - `users.rfid_value`
   - `products.sku`
   - `products.barcode_value`
   - `products.rfid_value`

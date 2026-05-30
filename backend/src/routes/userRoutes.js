@@ -9,18 +9,28 @@ const router = Router();
 
 router.use(requireAuth, requireRole("admin"));
 
+const optionalRfidValue = z.preprocess(
+  (value) => {
+    if (typeof value !== "string") return value;
+    const trimmed = value.trim();
+    return trimmed ? trimmed : null;
+  },
+  z.string().trim().min(1).max(80).nullable().optional()
+);
+
 router.get("/", getAllUsers);
 
 router.post(
   "/",
   validate({
-      body: z.object({
-        username: z.string().min(3),
-        password: z.string().min(6),
-        role: z.enum(["admin", "cashier", "head-cashier"]),
-        fullName: z.string().min(1)
-      })
-    }),
+    body: z.object({
+      username: z.string().min(3),
+      password: z.string().min(6),
+      role: z.enum(["admin", "cashier", "head-cashier"]),
+      fullName: z.string().min(1),
+      rfidValue: optionalRfidValue
+    })
+  }),
   createNewUser
 );
 
@@ -31,6 +41,7 @@ router.patch(
       .object({
         role: z.enum(["admin", "cashier", "head-cashier"]).optional(),
         fullName: z.string().min(1).optional(),
+        rfidValue: optionalRfidValue,
         status: z.enum(["active", "inactive"]).optional()
       })
       .strict()

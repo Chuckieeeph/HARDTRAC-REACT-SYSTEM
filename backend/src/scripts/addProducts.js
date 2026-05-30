@@ -81,7 +81,7 @@ async function insertProduct(p) {
 
 async function run() {
   // Ensure base reference data exists
-  const categories = ["Fasteners", "Plumbing", "Electrical", "Paint", "Tools"];
+  const categories = ["Fasteners", "Plumbing", "Electrical", "Paint", "Tools", "Building Materials"];
   for (const c of categories) await ensureCategory(c);
 
   const suppliers = [
@@ -272,6 +272,62 @@ async function run() {
       sellingPrice: 45.0,
       currentStock: 30,
       reorderLevel: 10
+    },
+    {
+      name: "Doorknob Set",
+      category: "Building Materials",
+      supplier: "Hardware Wholesale Co.",
+      sku: "SKU-DOORKNOB-SET",
+      barcodeValue: "BC-000017",
+      rfidValue: "RFID-000017",
+      description: "Stainless steel doorknob set",
+      unit: "set",
+      costPrice: 140.0,
+      sellingPrice: 195.0,
+      currentStock: 18,
+      reorderLevel: 6
+    },
+    {
+      name: "Iron Sheet 8ft",
+      category: "Building Materials",
+      supplier: "MVS Main Supplier",
+      sku: "SKU-IRON-SHEET-8FT",
+      barcodeValue: "BC-000018",
+      rfidValue: "RFID-000018",
+      description: "Corrugated iron sheet 8 feet",
+      unit: "sheet",
+      costPrice: 320.0,
+      sellingPrice: 420.0,
+      currentStock: 24,
+      reorderLevel: 8
+    },
+    {
+      name: "Door Hinge 4in",
+      category: "Building Materials",
+      supplier: "Hardware Wholesale Co.",
+      sku: "SKU-DOOR-HINGE-4IN",
+      barcodeValue: "BC-000019",
+      rfidValue: "RFID-000019",
+      description: "Heavy-duty door hinge 4 inch",
+      unit: "pair",
+      costPrice: 25.0,
+      sellingPrice: 40.0,
+      currentStock: 60,
+      reorderLevel: 15
+    },
+    {
+      name: "Aluminum Roof Nail",
+      category: "Building Materials",
+      supplier: "MVS Main Supplier",
+      sku: "SKU-ROOF-NAIL",
+      barcodeValue: "BC-000020",
+      rfidValue: "RFID-000020",
+      description: "Aluminum roofing nails",
+      unit: "pack",
+      costPrice: 18.0,
+      sellingPrice: 30.0,
+      currentStock: 90,
+      reorderLevel: 20
     }
   ];
 
@@ -315,4 +371,3 @@ run()
   .finally(async () => {
     await db.end();
   });
-

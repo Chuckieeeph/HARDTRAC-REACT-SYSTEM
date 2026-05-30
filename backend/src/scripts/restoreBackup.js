@@ -25,6 +25,17 @@ async function dropAllTables(connection) {
 async function ensurePostRestoreSchema(connection) {
   await connection.query("SET FOREIGN_KEY_CHECKS = 0");
 
+  const [userColumns] = await connection.query("SHOW COLUMNS FROM users");
+  const userColumnNames = new Set(userColumns.map((column) => column.Field));
+
+  if (!userColumnNames.has("rfid_value")) {
+    await connection.query("ALTER TABLE users ADD COLUMN rfid_value VARCHAR(80) NULL AFTER full_name");
+  }
+  const [userCreateRows] = await connection.query("SHOW CREATE TABLE users");
+  const userCreateStatement = userCreateRows[0]?.["Create Table"] || "";
+  if (!userCreateStatement.includes("uq_users_rfid")) {
+    await connection.query("ALTER TABLE users ADD UNIQUE KEY uq_users_rfid (rfid_value)");
+  }
   await connection.query(
     "ALTER TABLE users MODIFY role ENUM('admin','cashier','head-cashier') NOT NULL DEFAULT 'cashier'"
   );
@@ -60,22 +71,63 @@ async function ensurePostRestoreSchema(connection) {
     }
   }
 
-  const [roleRows] = await connection.query("SELECT COUNT(*) AS count FROM users WHERE role = 'head-cashier'");
-  if (roleRows[0].count === 0) {
-    const passwordHash = await bcrypt.hash("HeadCashier123!", 10);
-    await connection.query(
-      `
-      INSERT INTO users (username, password_hash, role, full_name, status)
-      VALUES ('headcashier', ?, 'head-cashier', 'Head Cashier', 'active')
-      ON DUPLICATE KEY UPDATE
-        password_hash = VALUES(password_hash),
-        role = VALUES(role),
-        full_name = VALUES(full_name),
-        status = VALUES(status)
-      `,
-      [passwordHash]
-    );
-  }
+  const adminHash = await bcrypt.hash("Admin123!", 10);
+  const cashierHash = await bcrypt.hash("Cashier123!", 10);
+  const cashier2Hash = await bcrypt.hash("Cashier2123!", 10);
+  const headCashierHash = await bcrypt.hash("HeadCashier123!", 10);
+
+  await connection.query(
+    `
+    INSERT INTO users (username, password_hash, role, full_name, rfid_value, status)
+    VALUES ('admin', ?, 'admin', 'System Admin', '0805615836', 'active')
+    ON DUPLICATE KEY UPDATE
+      password_hash = VALUES(password_hash),
+      role = VALUES(role),
+      full_name = VALUES(full_name),
+      rfid_value = VALUES(rfid_value),
+      status = VALUES(status)
+    `,
+    [adminHash]
+  );
+  await connection.query(
+    `
+    INSERT INTO users (username, password_hash, role, full_name, rfid_value, status)
+    VALUES ('cashier', ?, 'cashier', 'Cashier', '0807110236', 'active')
+    ON DUPLICATE KEY UPDATE
+      password_hash = VALUES(password_hash),
+      role = VALUES(role),
+      full_name = VALUES(full_name),
+      rfid_value = VALUES(rfid_value),
+      status = VALUES(status)
+    `,
+    [cashierHash]
+  );
+  await connection.query(
+    `
+    INSERT INTO users (username, password_hash, role, full_name, rfid_value, status)
+    VALUES ('cashier2', ?, 'cashier', 'Cashier 2', '0805666812', 'active')
+    ON DUPLICATE KEY UPDATE
+      password_hash = VALUES(password_hash),
+      role = VALUES(role),
+      full_name = VALUES(full_name),
+      rfid_value = VALUES(rfid_value),
+      status = VALUES(status)
+    `,
+    [cashier2Hash]
+  );
+  await connection.query(
+    `
+    INSERT INTO users (username, password_hash, role, full_name, rfid_value, status)
+    VALUES ('headcashier', ?, 'head-cashier', 'Head Cashier', '0807793948', 'active')
+    ON DUPLICATE KEY UPDATE
+      password_hash = VALUES(password_hash),
+      role = VALUES(role),
+      full_name = VALUES(full_name),
+      rfid_value = VALUES(rfid_value),
+      status = VALUES(status)
+    `,
+    [headCashierHash]
+  );
 
   await connection.query("SET FOREIGN_KEY_CHECKS = 1");
 }
@@ -106,7 +158,7 @@ async function run() {
     // eslint-disable-next-line no-console
     console.log(`Backup restored from ${path.relative(process.cwd(), backupPath)}`);
     // eslint-disable-next-line no-console
-    console.log("Head cashier account ensured: headcashier / HeadCashier123!");
+    console.log("Demo accounts ensured: admin, cashier, and headcashier");
   } finally {
     await connection.end();
   }

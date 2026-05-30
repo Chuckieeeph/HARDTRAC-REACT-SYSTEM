@@ -20,11 +20,13 @@ CREATE TABLE users (
   password_hash VARCHAR(255) NOT NULL,
   role ENUM('admin','cashier','head-cashier') NOT NULL DEFAULT 'cashier',
   full_name VARCHAR(120) NOT NULL,
+  rfid_value VARCHAR(80) NULL,
   status ENUM('active','inactive') NOT NULL DEFAULT 'active',
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
-  UNIQUE KEY uq_users_username (username)
+  UNIQUE KEY uq_users_username (username),
+  UNIQUE KEY uq_users_rfid (rfid_value)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE categories (

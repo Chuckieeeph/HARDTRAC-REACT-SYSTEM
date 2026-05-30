@@ -46,6 +46,15 @@ export function AuthProvider({ children }) {
     localStorage.setItem(USER_KEY, JSON.stringify(data.user));
   }
 
+  async function rfidLogin(rfidValue) {
+    const { data } = await api.post("/auth/rfid-login", { rfidValue });
+    setAuthToken(data.token);
+    setToken(data.token);
+    setUser(data.user);
+    localStorage.setItem(TOKEN_KEY, data.token);
+    localStorage.setItem(USER_KEY, JSON.stringify(data.user));
+  }
+
   function logout() {
     setAuthToken("");
     setToken("");
@@ -61,6 +70,7 @@ export function AuthProvider({ children }) {
       loading,
       isAuthenticated: Boolean(token && user),
       login,
+      rfidLogin,
       logout
     }),
     [token, user, loading]

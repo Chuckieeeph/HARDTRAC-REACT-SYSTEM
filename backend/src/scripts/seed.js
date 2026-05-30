@@ -28,46 +28,64 @@ async function run() {
 
     // Seed default accounts (bcrypt passwords).
     // Credentials for demo/testing:
-    // - Admin:   admin / Admin123!
-    // - Cashier: cashier / Cashier123!
-    // - Head Cashier: headcashier / HeadCashier123!
+    // - Admin:      admin / Admin123! / 0805615836
+    // - Cashier:    cashier / Cashier123! / 0807110236
+    // - Cashier 2:  cashier2 / Cashier2123! / 0805666812
+    // - Head Cashier: headcashier / HeadCashier123! / 0807793948
     const adminHash = await bcrypt.hash("Admin123!", 10);
     const cashierHash = await bcrypt.hash("Cashier123!", 10);
+    const cashier2Hash = await bcrypt.hash("Cashier2123!", 10);
     const headCashierHash = await bcrypt.hash("HeadCashier123!", 10);
 
     // Insert if not exists
     await connection.query(
       `
-      INSERT INTO users (username, password_hash, role, full_name, status)
-      VALUES ('admin', ?, 'admin', 'System Admin', 'active')
+      INSERT INTO users (username, password_hash, role, full_name, rfid_value, status)
+      VALUES ('admin', ?, 'admin', 'System Admin', '0805615836', 'active')
       ON DUPLICATE KEY UPDATE
         password_hash = VALUES(password_hash),
         role = VALUES(role),
         full_name = VALUES(full_name),
+        rfid_value = VALUES(rfid_value),
         status = VALUES(status)
       `,
       [adminHash]
     );
     await connection.query(
       `
-      INSERT INTO users (username, password_hash, role, full_name, status)
-      VALUES ('cashier', ?, 'cashier', 'Default Cashier', 'active')
+      INSERT INTO users (username, password_hash, role, full_name, rfid_value, status)
+      VALUES ('cashier', ?, 'cashier', 'Cashier', '0807110236', 'active')
       ON DUPLICATE KEY UPDATE
         password_hash = VALUES(password_hash),
         role = VALUES(role),
         full_name = VALUES(full_name),
+        rfid_value = VALUES(rfid_value),
         status = VALUES(status)
       `,
       [cashierHash]
     );
     await connection.query(
       `
-      INSERT INTO users (username, password_hash, role, full_name, status)
-      VALUES ('headcashier', ?, 'head-cashier', 'Head Cashier', 'active')
+      INSERT INTO users (username, password_hash, role, full_name, rfid_value, status)
+      VALUES ('cashier2', ?, 'cashier', 'Cashier 2', '0805666812', 'active')
       ON DUPLICATE KEY UPDATE
         password_hash = VALUES(password_hash),
         role = VALUES(role),
         full_name = VALUES(full_name),
+        rfid_value = VALUES(rfid_value),
+        status = VALUES(status)
+      `,
+      [cashier2Hash]
+    );
+    await connection.query(
+      `
+      INSERT INTO users (username, password_hash, role, full_name, rfid_value, status)
+      VALUES ('headcashier', ?, 'head-cashier', 'Head Cashier', '0807793948', 'active')
+      ON DUPLICATE KEY UPDATE
+        password_hash = VALUES(password_hash),
+        role = VALUES(role),
+        full_name = VALUES(full_name),
+        rfid_value = VALUES(rfid_value),
         status = VALUES(status)
       `,
       [headCashierHash]

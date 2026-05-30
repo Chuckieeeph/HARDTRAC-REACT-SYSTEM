@@ -29,8 +29,26 @@ export default function ProductsPage() {
   const [toast, setToast] = useState({ show: false, message: "", variant: "success" });
   const [archiveTarget, setArchiveTarget] = useState(null);
   const [error, setError] = useState("");
+  const [pageSize, setPageSize] = useState(10);
+  const [page, setPage] = useState(1);
 
   const filtered = useMemo(() => products, [products]);
+  const pageSizeValue = pageSize === "all" ? filtered.length || 1 : Number(pageSize);
+  const totalPages = pageSize === "all" ? 1 : Math.max(1, Math.ceil(filtered.length / pageSizeValue));
+  const visibleProducts = useMemo(() => {
+    if (pageSize === "all") return filtered;
+
+    const startIndex = (page - 1) * pageSizeValue;
+    return filtered.slice(startIndex, startIndex + pageSizeValue);
+  }, [filtered, page, pageSize, pageSizeValue]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [q, pageSize]);
+
+  useEffect(() => {
+    setPage((currentPage) => Math.min(currentPage, totalPages));
+  }, [totalPages]);
 
   async function load() {
     setLoading(true);
@@ -97,11 +115,31 @@ export default function ProductsPage() {
         <div className="alert alert-info">No products found.</div>
       ) : (
         <div className="card ht-cardHover">
+          <div className="card-body d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
+            <div className="text-muted small">
+              Showing {visibleProducts.length} of {filtered.length} products
+            </div>
+            <div className="d-flex align-items-center gap-2">
+              <label className="text-muted small mb-0">Rows</label>
+              <select
+                className="form-select form-select-sm"
+                style={{ width: "auto" }}
+                value={pageSize}
+                onChange={(e) => setPageSize(e.target.value === "all" ? "all" : Number(e.target.value))}
+              >
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={20}>20</option>
+                <option value="all">ALL</option>
+              </select>
+            </div>
+          </div>
           <div className="table-responsive">
             <table className="table table-striped mb-0">
               <thead>
                 <tr>
                   <th>Name</th>
+                  <th>Category</th>
                   <th>SKU</th>
                   <th>Barcode</th>
                   <th>RFID</th>
@@ -112,9 +150,10 @@ export default function ProductsPage() {
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((p) => (
+                {visibleProducts.map((p) => (
                   <tr key={p.id}>
                     <td className="fw-semibold">{p.name}</td>
+                    <td>{p.category_name || "-"}</td>
                     <td>{p.sku}</td>
                     <td className="text-muted small">{p.barcode_value || "-"}</td>
                     <td className="text-muted small">{p.rfid_value || "-"}</td>
@@ -144,6 +183,32 @@ export default function ProductsPage() {
               </tbody>
             </table>
           </div>
+
+          {pageSize !== "all" && filtered.length > 0 && (
+            <div className="card-body d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2 border-top">
+              <div className="text-muted small">
+                Page {page} of {totalPages}
+              </div>
+              <div className="d-flex gap-2">
+                <button
+                  type="button"
+                  className="btn btn-outline-secondary ht-btn ht-btnGhost btn-sm"
+                  onClick={() => setPage((currentPage) => Math.max(1, currentPage - 1))}
+                  disabled={page <= 1}
+                >
+                  Prev
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-outline-secondary ht-btn ht-btnGhost btn-sm"
+                  onClick={() => setPage((currentPage) => Math.min(totalPages, currentPage + 1))}
+                  disabled={page >= totalPages}
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
 

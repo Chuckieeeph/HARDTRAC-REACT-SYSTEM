@@ -42,7 +42,7 @@ function Icon({ name }) {
   return null;
 }
 
-export default function Topbar({ onToggleSidebar, onToggleMobile }) {
+export default function Topbar({ onToggleSidebar, onToggleMobile, isPosRoute = false, canLogout, onLogoutBlocked }) {
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
 
@@ -62,20 +62,33 @@ export default function Topbar({ onToggleSidebar, onToggleMobile }) {
           </div>
         </div>
         <div className="d-flex flex-wrap align-items-center gap-2 justify-content-end">
-          <button
-            className="btn btn-outline-secondary btn-sm ht-btn ht-btnGhost d-inline-flex align-items-center gap-2"
-            onClick={toggleTheme}
-            aria-label="Toggle theme"
-          >
-            {theme === "dark" ? <Icon name="sun" /> : <Icon name="moon" />}
-            <span className="d-none d-md-inline">{theme === "dark" ? "MVS Light" : "HARDTRAC Dark"}</span>
-          </button>
+          {!isPosRoute && (
+            <button
+              className="btn btn-outline-secondary btn-sm ht-btn ht-btnGhost d-inline-flex align-items-center gap-2"
+              onClick={toggleTheme}
+              aria-label="Toggle theme"
+            >
+              {theme === "dark" ? <Icon name="sun" /> : <Icon name="moon" />}
+              <span className="d-none d-md-inline">{theme === "dark" ? "MVS Light" : "HARDTRAC Dark"}</span>
+            </button>
+          )}
           <span className="small text-muted ht-userLabel">
             {user?.fullName ? `${user.fullName} (${user.role})` : user?.username}
           </span>
-          <button className="btn btn-outline-secondary btn-sm ht-btn ht-btnGhost" onClick={logout}>
-            Logout
-          </button>
+          {!isPosRoute && (
+            <button
+              className="btn btn-outline-secondary btn-sm ht-btn ht-btnGhost"
+              onClick={() => {
+                if (typeof canLogout === "function" && !canLogout()) {
+                  onLogoutBlocked?.();
+                  return;
+                }
+                logout();
+              }}
+            >
+              Logout
+            </button>
+          )}
         </div>
       </div>
     </header>
